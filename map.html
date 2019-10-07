@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html style="background-color:#ccffff">
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    .column {
+        float: left;
+        padding: 10px;
+        height: 300px;
+    }
+
+    .left {
+        width: 66%;
+    }
+
+    .right1 {
+        width: 16%;
+    }
+
+    .right2 {
+        width: 16%;
+    }
+
+    .row:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+    h1 {
+        font-size: 48px;
+        text-align: center;
+    }
+
+    label {
+        font-size: 25px;
+        color: green;
+    }
+</style>
+
+<head>
+    <h1 style="color: green">Grab</h1>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v1.4.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v1.4.0/mapbox-gl.css' rel='stylesheet' />
+    <title>Main Map </title>
+</head>
+
+<body>
+    <div class="row">
+        <div class="column left" style="background-color:FFFFFF;">
+            <div id='map' style='width: 750px; height: 500px;'></div>
+            <script>
+                mapboxgl.accessToken = 'pk.eyJ1IjoibWl0dG9rIiwiYSI6ImNrMTh3YTV5dTAxY3QzaG81dmd5NzJ6NmIifQ.DucIAMARJZ-3qUW9iuCPZQ';
+                var map = new mapboxgl.Map({
+                    container: 'map',
+                    style: 'mapbox://styles/mapbox/streets-v11'
+                });
+            </script>
+        </div>
+        <div class="column right" style="background-color:C8C3C3;"></div>
+        <br> 
+        <br>
+        <label>Vị trí hiện tai</label><br><input type="text" placeholder="Vị trí hiện tại"></input>
+        <br>
+        <br> 
+        <br>
+        <br> 
+        <br>
+        <br> 
+        <br>
+        <label>Điểm đến</label><br><input type="text" placeholder="Điểm đến"></input>
+        <br>
+        <br> 
+        <br>
+        <br> 
+        <button type="button" onclick="alert('Đang tính đường đi')">Tính đường đi</button>   
+        </div>
+    </div>
+
+</body>
+
+</html>
