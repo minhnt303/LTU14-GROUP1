@@ -26,14 +26,6 @@ const AppUserSchema = new mongoose.Schema({
         type: Array,
         require: true,
     },
-    PositionStart:{
-        type: Array,
-        require: true,
-    },
-    PositionTo:{
-        type: Array,
-        require: true,
-    },
     CreatedDate: {
         type: Date,
         default: new Date(),
