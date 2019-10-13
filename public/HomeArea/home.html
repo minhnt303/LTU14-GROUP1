@@ -9,53 +9,71 @@
     <!-- <link href='https://api.mapbox.com/mapbox-gl-js/v1.3.1/mapbox-gl.css' rel='stylesheet' /> -->
     <!-- <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.3.1/mapbox-gl.js'></script> -->
     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.4.0/mapbox-gl.js'></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.4.0/mapbox-gl.css' rel='stylesheet' />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-        }
-
-        #map {
-            top: 0;
-            bottom: 0;
-            width: 100%;
-        }
-
-        #menu {
-            position: absolute;
-            background: #fff;
-            padding: 10px;
-            font-family: 'Open Sans', sans-serif;
-        }
-    </style>
+    <link href="/HomeArea/home.css" rel='stylesheet' type="text/css">
 </head>
 
 <body>
-    <div>
-        <div>
-            <div id="map" style="height: 400px;width: 800px;"></div>
+    <div class="mapHome">
+        <div class="mapInfo col-sm-12">
+            <div id="map" class="ui-widget-content"></div>
+            <div id="zoomMap">
+                <a onclick="zoomMap()" class="btn btn-sm btn-info">Phóng to bản đồ</a>
+            </div>
+            <div id="zoomInMap">
+                <a onclick="zoomInMap()" class="btn btn-sm btn-info">Phóng nhỏ bản đồ</a>
+            </div>
         </div>
-        <div>
-            <button onclick="getLocation()">Lấy vị trí hiện tại</button>
-        </div>
-        <p id="demo"></p>
-        <div id='menu'>
-            <input id='streets-v11' type='radio' name='rtoggle' value='streets' checked='checked'>
-            <label for='streets'>streets</label>
-            <input id='light-v10' type='radio' name='rtoggle' value='light'>
-            <label for='light'>light</label>
-            <input id='dark-v10' type='radio' name='rtoggle' value='dark'>
-            <label for='dark'>dark</label>
-            <input id='outdoors-v11' type='radio' name='rtoggle' value='outdoors'>
-            <label for='outdoors'>outdoors</label>
-            <input id='satellite-v9' type='radio' name='rtoggle' value='satellite'>
-            <label for='satellite'>satellite</label>
+        <div class="mapItem col-sm-6">
+            <div>
+                <button onclick="getLocation()">Lấy vị trí hiện tại</button>
+            </div>
+            <p id="demo"></p>
+            <div id='menu'>
+                <input id='streets-v11' type='radio' name='rtoggle' value='streets' checked='checked'>
+                <label for='streets'>streets</label>
+                <input id='light-v10' type='radio' name='rtoggle' value='light'>
+                <label for='light'>light</label>
+                <input id='dark-v10' type='radio' name='rtoggle' value='dark'>
+                <label for='dark'>dark</label>
+                <input id='outdoors-v11' type='radio' name='rtoggle' value='outdoors'>
+                <label for='outdoors'>outdoors</label>
+                <input id='satellite-v9' type='radio' name='rtoggle' value='satellite'>
+                <label for='satellite'>satellite</label>
+            </div>
         </div>
     </div>
+
+
+
+
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script>
+        var windowHeight = $(window).height() - 30;
+        var windowWidth = $(window).width() - 30;
+        var windowMinWidth = $(window).width()/2 -15;
+        function zoomMap(){
+            $("#zoomInMap").show();
+            $("#zoomMap").hide();
+            console.log(1);
+            $("#map").css("width", windowWidth);
+            map.resize();
+        }
+        function zoomInMap(){
+            $("#zoomInMap").hide();
+            $("#zoomMap").show();
+            console.log(2);
+            $("#map").css("width", windowMinWidth);
+            map.resize();
+        }
+        $(document).ready(function () {
+            $("#zoomInMap").hide();
+            $("#map").css("height", windowHeight);
+        });
         mapboxgl.accessToken = 'pk.eyJ1IjoibWluaG50dXllbiIsImEiOiJjazEwNWkyMWcwMjRhM2hwYmVybWlmenN4In0.w81DZILIiJNnmQV4Dg6JYA';
 
         var x = document.getElementById("demo");
@@ -73,7 +91,31 @@
             center: [105.8444083, 21.004097599999998],
             zoom: 15
         });
+        $(function () {// Getter
+            var minWidth = $(".selector").resizable("option", "minWidth");
 
+            // Setter
+            $(".selector").resizable("option", "minWidth", windowMinWidth);
+            // Getter
+            var maxWidth = $(".selector").resizable("option", "maxWidth");
+
+            // Setter
+            $(".selector").resizable("option", "maxWidth", windowWidth);
+            // Getter
+            var maxHeight = $(".selector").resizable("option", "maxHeight");
+
+            // Setter
+            $(".selector").resizable("option", "maxHeight", windowHeight);
+            $("#map").resizable({
+                maxHeight: windowHeight,
+                maxWidth: windowWidth,
+                minWidth:windowMinWidth
+            });
+            map.resize();
+        });
+        $("#map").resize(function (e) {
+            map.resize();
+        });
         map.addControl(new mapboxgl.NavigationControl());
         var layerList = document.getElementById('menu');
         var inputs = layerList.getElementsByTagName('input');
@@ -175,7 +217,8 @@
 
             function switchLayer(layer) {
                 var layerId = layer.target.id;
-                map.setStyle('mapbox://styles/mapbox/' + layerId); map.on('load', function () {
+                map.setStyle('mapbox://styles/mapbox/' + layerId);
+                map.on('load', function () {
 
                     map.addImage('pulsing-dot', pulsingDot, { pixelRatio: 2 });
 

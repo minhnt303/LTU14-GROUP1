@@ -1,0 +1,53 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+#map {
+    width: 50%;
+    float: left;
+    border-radius: 20px;
+    border: 1px solid cornflowerblue;
+}
+
+#menu {
+    position: absolute;
+    background: #fff;
+    padding: 10px;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.mapItem {
+    float: right;
+    padding: 15px;
+}
+
+.mapInfo {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    padding-top: 15px;
+    padding-left: 15px;
+}
+
+#zoomMap{
+    width: 100%;
+    position: absolute;
+    top: 0;
+    z-index: 20;
+    margin-top: 25px;
+    left: 0;
+    padding-left: 25px;
+}
+#zoomInMap{
+    width: 100%;
+    position: absolute;
+    top: 0;
+    z-index: 20;
+    margin-top: 25px;
+    left: 0;
+    padding-left: 25px;
+}
