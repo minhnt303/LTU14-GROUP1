@@ -5,10 +5,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Test Map Box</title>
+    <title>GrabBike_WebVersion</title>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
     <!-- <link href='https://api.mapbox.com/mapbox-gl-js/v1.3.1/mapbox-gl.css' rel='stylesheet' /> -->
     <!-- <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.3.1/mapbox-gl.js'></script> -->
     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.4.0/mapbox-gl.js'></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.4.0/mapbox-gl.css' rel='stylesheet' />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
@@ -29,7 +40,7 @@
         </div>
         <div class="mapItem col-sm-6">
             <div>
-                <button onclick="getLocation()">Lấy vị trí hiện tại</button>
+                <a onclick="getLocation()" class="btn btn-sm btn-success">Lấy vị trí hiện tại</a>
             </div>
             <p id="demo"></p>
             <div id='menu'>
@@ -55,17 +66,19 @@
     <script>
         var windowHeight = $(window).height() - 30;
         var windowWidth = $(window).width() - 30;
-        var windowMinWidth = $(window).width()/2 -15;
-        function zoomMap(){
+        var windowMinWidth = $(window).width() / 2 - 15;
+        function zoomMap() {
             $("#zoomInMap").show();
             $("#zoomMap").hide();
+            $(".mapItem").hide();
             console.log(1);
             $("#map").css("width", windowWidth);
             map.resize();
         }
-        function zoomInMap(){
+        function zoomInMap() {
             $("#zoomInMap").hide();
             $("#zoomMap").show();
+            $(".mapItem").show();
             console.log(2);
             $("#map").css("width", windowMinWidth);
             map.resize();
@@ -91,29 +104,33 @@
             center: [105.8444083, 21.004097599999998],
             zoom: 15
         });
-        $(function () {// Getter
+        $(function () {
+            // Getter
             var minWidth = $(".selector").resizable("option", "minWidth");
-
             // Setter
             $(".selector").resizable("option", "minWidth", windowMinWidth);
             // Getter
             var maxWidth = $(".selector").resizable("option", "maxWidth");
-
             // Setter
             $(".selector").resizable("option", "maxWidth", windowWidth);
             // Getter
             var maxHeight = $(".selector").resizable("option", "maxHeight");
-
             // Setter
             $(".selector").resizable("option", "maxHeight", windowHeight);
             $("#map").resizable({
                 maxHeight: windowHeight,
                 maxWidth: windowWidth,
-                minWidth:windowMinWidth
+                minWidth: windowMinWidth
             });
             map.resize();
         });
         $("#map").resize(function (e) {
+            console.log($("#map").width());
+            if ($("#map").width() > (windowMinWidth + 15)) {
+                $("#map").css("z-index", 10);
+            }else{
+                $("#map").css("z-index", "unset");
+            }
             map.resize();
         });
         map.addControl(new mapboxgl.NavigationControl());

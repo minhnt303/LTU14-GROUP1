@@ -28,7 +28,6 @@ body {
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 10;
     padding-top: 15px;
     padding-left: 15px;
 }
