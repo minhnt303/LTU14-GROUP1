@@ -7,7 +7,7 @@ body {
     width: 50%;
     float: left;
     border-radius: 20px;
-    border: 1px solid cornflowerblue;
+    border: 1px solid #9e9e9e;
 }
 
 #menu {
@@ -20,6 +20,7 @@ body {
 .mapItem {
     float: right;
     padding: 15px;
+    width: 100%;
 }
 
 .mapInfo {
@@ -58,12 +59,58 @@ body {
 }
 .btn-info{
     color: #fff !important;    
-    background-color: #3498db !important;
+    background-color: #616161 !important;
+    border-color: #bdbdbd !important;
+}
+.btn-info:hover{
+    color: #fff !important;    
+    background-color: #bdbdbd !important;
+    border-color: #eeeeee !important;
 }
 .btn-success{
     color: #fff !important;    
-    background-color: #2ecc71 !important;
+    background-color: #616161 !important;
+    border-color: #bdbdbd !important;
+}
+.btn-success:hover{
+    color: #fff !important;    
+    background-color: #bdbdbd !important;
+    border-color: #eeeeee !important;
 }
 .mapboxgl-ctrl-top-right{
     z-index: 30;
+}
+#settingLayerButton{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding-bottom: 20px;
+    padding-right: 30px;
+}
+#settingLayerButton a{
+    border-radius: 50%;
+    border: 2px solid rgb(97, 97, 97);
+    height: 30px;
+    width: 30px;
+    padding-top: 7px;
+    padding-bottom: 12px;
+    padding-left: 4px;
+    padding-right: 4px;
+    cursor: pointer;
+    border-color: rgb(97, 97, 97) !important;
+}
+#settingLayerButton a:hover{
+    background-color: #757575;
+}
+#menu{
+    border: 2px solid rgb(97, 97, 97);
+    border-radius: 15px;
+    height: 44px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin-bottom: 13px;
+    margin-right: 86px;
+    background-color: #757575;
+    color: white;
 }

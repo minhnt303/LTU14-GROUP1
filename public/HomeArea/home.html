@@ -48,17 +48,23 @@
                 <a onclick="getLocation()" class="btn btn-sm btn-success"><b>LẤY VỊ TRÍ HIỆN TẠI</b></a>
             </div>
             <p id="demo"></p>
+            <div id="settingLayerButton">
+                <a onclick="openSettingLayerButton()" id="openSetting"><img src="https://image.flaticon.com/icons/svg/149/149295.svg"
+                        alt="settingbutton" class="settingbutton" style="height: 30px; width: 30px;"></a>
+                <a onclick="closeSettingLayerButton()" id="closeSetting"><img src="https://image.flaticon.com/icons/svg/149/149295.svg"
+                        alt="settingbutton" class="settingbutton" style="height: 30px; width: 30px;"></a>
+            </div>
             <div id='menu'>
                 <input id='streets-v11' type='radio' name='rtoggle' value='streets'>
-                <label for='streets'>streets</label>
+                <label for='streets'><b>ĐƯỜNG PHỐ</b></label>
                 <input id='light-v10' type='radio' name='rtoggle' value='light'>
-                <label for='light'>light</label>
+                <label for='light'><b>SÁNG</b></label>
                 <input id='dark-v10' type='radio' name='rtoggle' value='dark'>
-                <label for='dark'>dark</label>
+                <label for='dark'><b>TỐI</b></label>
                 <input id='outdoors-v11' type='radio' name='rtoggle' value='outdoors'>
-                <label for='outdoors'>outdoors</label>
+                <label for='outdoors'><b>NGOÀI TRỜI</b></label>
                 <input id='satellite-v9' type='radio' name='rtoggle' value='satellite'>
-                <label for='satellite'>satellite</label>
+                <label for='satellite'><b>VỆ TINH</b></label>
             </div>
         </div>
     </div>
@@ -69,6 +75,18 @@
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script>
+        function openSettingLayerButton() {
+            $("#closeSetting").show();
+            $("#openSetting").hide();
+            $("#menu").show();
+            layer = sessionStorage.getItem("mapLayer");
+            $("#" + layer).prop("checked", true);
+        }
+        function closeSettingLayerButton() {
+            $("#closeSetting").hide();
+            $("#openSetting").show();
+            $("#menu").hide();
+        }
         var layer = "streets-v11";
         if (sessionStorage.getItem("mapLayer") != null && sessionStorage.getItem("mapLayer") != "") {
             layer = sessionStorage.getItem("mapLayer");
@@ -99,6 +117,9 @@
             $("#zoomInMap").hide();
             $("#mapCurrentPosition").hide();
             $("#map").css("height", windowHeight);
+            $(".mapItem").css("height", windowHeight+30);
+            $("#closeSetting").hide();
+            $("#menu").hide();
         });
         mapboxgl.accessToken = 'pk.eyJ1IjoibWluaG50dXllbiIsImEiOiJjazEwNWkyMWcwMjRhM2hwYmVybWlmenN4In0.w81DZILIiJNnmQV4Dg6JYA';
 
