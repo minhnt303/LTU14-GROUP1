@@ -33,20 +33,37 @@ body {
 }
 
 #zoomMap{
-    width: 100%;
     position: absolute;
     top: 0;
     z-index: 20;
-    margin-top: 25px;
+    margin-top: 26px;
     left: 0;
     padding-left: 25px;
 }
 #zoomInMap{
-    width: 100%;
     position: absolute;
     top: 0;
     z-index: 20;
-    margin-top: 25px;
+    margin-top: 26px;
     left: 0;
     padding-left: 25px;
+}
+#mapCurrentPosition{
+    position: absolute;
+    top: 0;
+    z-index: 20;
+    margin-top: 26px;
+    right: 0;
+    padding-right: 75px;
+}
+.btn-info{
+    color: #fff !important;    
+    background-color: #3498db !important;
+}
+.btn-success{
+    color: #fff !important;    
+    background-color: #2ecc71 !important;
+}
+.mapboxgl-ctrl-top-right{
+    z-index: 30;
 }
