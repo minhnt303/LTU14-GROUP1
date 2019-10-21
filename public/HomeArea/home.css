@@ -35,19 +35,25 @@ body {
 
 #zoomMap{
     position: absolute;
-    top: 0;
+    bottom: 0;
     z-index: 20;
-    margin-top: 26px;
+    margin-bottom: 26px;
     left: 0;
     padding-left: 25px;
 }
+#zoomMap a{
+    box-shadow: 1px 1px 1px 1px #888888;
+}
 #zoomInMap{
     position: absolute;
-    top: 0;
+    bottom: 0;
     z-index: 20;
-    margin-top: 26px;
+    margin-bottom: 26px;
     left: 0;
     padding-left: 25px;
+}
+#zoomInMap a{
+    box-shadow: 1px 1px 1px 1px #888888;
 }
 #mapCurrentPosition{
     position: absolute;
@@ -56,6 +62,15 @@ body {
     margin-top: 26px;
     right: 0;
     padding-right: 75px;
+}
+#mapCurrentPosition a{
+    box-shadow: 1px 1px 1px 1px #888888;
+}
+#mapCurrentPosition2 a{
+    box-shadow: 1px 1px 1px 1px #888888;
+}
+#InputLocation a{
+    box-shadow: 1px 1px 1px 1px #888888;
 }
 .btn-info{
     color: #fff !important;    
@@ -84,7 +99,7 @@ body {
     position: absolute;
     bottom: 0;
     right: 0;
-    padding-bottom: 20px;
+    padding-bottom: 30px;
     padding-right: 30px;
 }
 #settingLayerButton a{
@@ -92,15 +107,17 @@ body {
     border: 2px solid rgb(97, 97, 97);
     height: 30px;
     width: 30px;
-    padding-top: 7px;
+    padding-top: 10px;
     padding-bottom: 12px;
     padding-left: 4px;
     padding-right: 4px;
     cursor: pointer;
     border-color: rgb(97, 97, 97) !important;
+    box-shadow: 1px 1px 1px 1px #888888;
 }
 #settingLayerButton a:hover{
     background-color: #757575;
+    box-shadow: 1px 1px 1px 1px #888888;
 }
 #menu{
     border: 2px solid rgb(97, 97, 97);
@@ -109,8 +126,70 @@ body {
     position: absolute;
     bottom: 0;
     right: 0;
-    margin-bottom: 13px;
+    margin-bottom: 23px;
     margin-right: 86px;
     background-color: #757575;
     color: white;
+    box-shadow: 1px 1px 1px 1px #888888;
+}
+.navBarArea{
+    position: absolute;
+    right: 0;
+    padding-top: 30px;
+    padding-right: 30px;
+}
+.navBarArea a{
+    cursor: pointer;
+    padding-right: 10px;
+}
+.navBarItem{
+    z-index: 50;
+    width: 250px;
+    border: 2px solid #bdbdbd;
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 1px 1px 1px 1px #888888;
+}
+#isLogin,#isNotLogin,#isLoginDriver{
+    text-align: center;
+}
+#isLogin img{
+    height: 110px;
+    width: 110px;
+    border-radius: 50%;
+    border: 2px solid #bdbdbd;
+    box-shadow: 1px 1px 1px 1px #888888;
+}
+#isLogin div{
+    font-size: 17px;
+    margin-top: 10px;
+    color: #616161;
+    cursor: pointer;
+}
+#isLoginDriver img{
+    height: 110px;
+    width: 110px;
+    border-radius: 50%;
+    border: 2px solid #bdbdbd;
+    box-shadow: 1px 1px 1px 1px #888888;
+}
+#isLoginDriver div{
+    font-size: 17px;
+    margin-top: 10px;
+    color: #616161;
+    cursor: pointer;
+}
+.logOutDetail{
+    padding-top: 10px;
+    border-top: 2px solid #bdbdbd;
+}
+#isNotLogin div{
+    font-size: 17px;
+    margin-top: 10px;
+    color: #616161;
+    cursor: pointer;
+}
+.registerDetail{
+    padding-top: 10px;
+    border-top: 2px solid #bdbdbd;
 }
