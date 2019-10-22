@@ -65,6 +65,9 @@
                     lat: position.coords.latitude,
                     lng: position.coords.longitude
                 };
+                var marker = new mapboxgl.Marker({
+                    draggable: true,
+                }).setLngLat(pos).addTo(map);
                 map.setCenter(pos);
             });
 
