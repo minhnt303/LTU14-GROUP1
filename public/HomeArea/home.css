@@ -72,6 +72,9 @@ body {
 #InputLocation a{
     box-shadow: 1px 1px 1px 1px #888888;
 }
+#CallDriver a{
+    box-shadow: 1px 1px 1px 1px #888888;
+}
 .btn-info{
     color: #fff !important;    
     background-color: #616161 !important;

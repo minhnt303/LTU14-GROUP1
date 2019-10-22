@@ -7,6 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>GrabBike_WebVersion</title>
     <link rel="icon" href="data:image/x-icon;," type="image/x-icon">
+    <link rel="shortcut icon" type="image/png" href="../image/faviconShortCutIcon.png"/>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
         crossorigin="anonymous"></script>
@@ -45,23 +46,34 @@
             <div id="map" class="ui-widget-content"></div>
             <div id="zoomMap">
                 <a onclick="zoomMap()" class="btn btn-sm btn-info"><i class="fa fa-search-plus"></i> <b>PHÓNG TO</b></a>
+                <a onclick="Direction()" class="btn btn-sm btn-info DirectionOpenClose1"><b>CHỈ ĐƯỜNG</b></a>
             </div>
             <div id="zoomInMap">
                 <a onclick="zoomInMap()" class="btn btn-sm btn-info"><i class="fa fa-search-minus"></i> <b>THU
                         NHỎ</b></a>
+                <a onclick="Direction()" class="btn btn-sm btn-info DirectionOpenClose2"><b>CHỈ ĐƯỜNG</b></a>
             </div>
             <div id="mapCurrentPosition">
                 <a onclick="getLocation()" class="btn btn-sm btn-success"><b>LẤY VỊ TRÍ HIỆN TẠI</b></a>
             </div>
         </div>
         <div class="mapItem col-sm-6">
-            <div id="mapCurrentPosition2">
+            <div class="" style="margin-top: 15px;margin-bottom: 20px; margin-left: 15px;">
+                <img src="/image/favicon.png" style="height: 40px; border-radius: 50%; box-shadow: 1px 1px 1px 1px #888888;">
+            </div>
+            <div id="mapCurrentPosition2" class="col-sm-6">
                 <a onclick="getLocation()" class="btn btn-sm btn-success"><b>LẤY VỊ TRÍ HIỆN TẠI</b></a>
             </div>
-            <div id="InputLocation">
+            <div id="InputLocation" class="col-sm-6">
                 <a onclick="getInputLocation()" class="btn btn-sm btn-success"><b>TÌM ĐỊA ĐIỂM</b></a>
             </div>
-            <p id="demo"></p>
+            <div id="LocationDirectionGuest" class="col-sm-6">
+                <a onclick="getLocationDirectionGuest()" class="btn btn-sm btn-success"><b>LẤY LỘ TRÌNH ĐƯỜNG ĐI</b></a>
+            </div>
+            <div id="CallDriver" class="col-sm-6">
+                <a onclick="callDriver()" class="btn btn-sm btn-success"><b>TÌM LÁI XE</b></a>
+            </div>
+            <!-- <p id="demo"></p> -->
             <div id="settingLayerButton">
                 <a onclick="openSettingLayerButton()" id="openSetting"><img src="/image/settings.png"
                         alt="settingbutton" class="settingbutton" style="height: 30px; width: 30px;"></a>
