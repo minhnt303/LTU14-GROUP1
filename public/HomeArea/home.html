@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>GrabBike_WebVersion</title>
     <link rel="icon" href="data:image/x-icon;," type="image/x-icon">
-    <link rel="shortcut icon" type="image/png" href="../image/faviconShortCutIcon.png"/>
+    <link rel="shortcut icon" type="image/png" href="../image/faviconShortCutIcon.png" />
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
         crossorigin="anonymous"></script>
@@ -58,8 +58,23 @@
             </div>
         </div>
         <div class="mapItem col-sm-6">
-            <div class="" style="margin-top: 15px;margin-bottom: 20px; margin-left: 15px;">
-                <img src="/image/favicon.png" style="height: 40px; border-radius: 50%; box-shadow: 1px 1px 1px 1px #888888;">
+            <div class="" style="margin-top: 15px;margin-bottom: 20px; margin-left: 15px;display: flex;">
+                <img src="/image/favicon.png"
+                    style="height: 40px; border-radius: 50%; box-shadow: 1px 1px 1px 1px #888888;">
+                <span style="
+                font-size: 20px;
+                font-weight: bold;
+                margin-left: 30px;
+                background-color: #bdbdbd;
+                padding-top: 8px;
+                padding-bottom: 8px;
+                padding-left: 10px;
+                padding-right: 10px;
+                margin-top: 0px;
+                border-top-width: 10px;
+                color: white;
+                border-radius: 15px;box-shadow: 1px 1px 1px 1px #888888;
+            ">100,000 VND</span>
             </div>
             <div id="mapCurrentPosition2" class="col-sm-6">
                 <a onclick="getLocation()" class="btn btn-sm btn-success"><b>LẤY VỊ TRÍ HIỆN TẠI</b></a>
@@ -71,7 +86,20 @@
                 <a onclick="getLocationDirectionGuest()" class="btn btn-sm btn-success"><b>LẤY LỘ TRÌNH ĐƯỜNG ĐI</b></a>
             </div>
             <div id="CallDriver" class="col-sm-6">
-                <a onclick="callDriver()" class="btn btn-sm btn-success"><b>TÌM LÁI XE</b></a>
+                <a onclick="findDriver()" class="btn btn-sm btn-success"><b>TÌM LÁI XE</b></a>
+            </div>
+            <div class="mapItemTab col-sm-12">
+                <div class="mapItemTab1">
+                    <div class="col-sm-6">
+                        <h5><b style="text-decoration: underline;">LỘ TRÌNH CHUYẾN ĐI:</b></h5>
+                        <div id="LoTrinhChuyenDi"><span style='font-size: 25px;'>0km 0min</span></div>
+                    </div>
+                    <div class="col-sm-6">
+                        <h5><b style="text-decoration: underline;">SỐ TIỀN PHẢI TRẢ:</b></h5>
+                        <div id="TienDi"><span>đ</span> <span style='font-size: 25px;'>0</span></div>
+                    </div>
+                </div>
+                <div class="mapItemTab2"></div>
             </div>
             <!-- <p id="demo"></p> -->
             <div id="settingLayerButton">

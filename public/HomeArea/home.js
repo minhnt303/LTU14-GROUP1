@@ -1,6 +1,17 @@
 // import * as AppUserConstant from '../HomeArea/AppUserConstant';
 // var appUserType = AppUserConstant;
 // var a = appUserType.Customer;
+var QuangDuong = "";
+var ThoiGian = "";
+var Money = "";
+var LoactionFrom = "";
+var LocationTo = "";
+const formatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'VND',
+    minimumFractionDigits: 2
+});
+
 if (sessionStorage.getItem("userType") == null) {
     $("#isLoginDriver").hide();
     $("#isLogin").hide();
@@ -16,10 +27,77 @@ else if (sessionStorage.getItem("userType") == "Driver") {
     $("#isLogin").hide();
     $("#isNotLogin").hide();
 }
+function getMeters(i) {
+    return i * 1609;
+}
+function getKiloMeters(i) {
+    return i / 1000;
+}
+function ConvertToMinute(time) {
+    var hourPosition = time.search("h");
+    var minutePosition = time.search("min");
+    if (hourPosition == -1) {
+        return time = time.slice(0, minutePosition);
+    } else {
+        var hour = time.slice(0, hourPosition);
+        var minute = time.slice(hourPosition + 2, minutePosition);
+        return time = parseInt(minute, 10) + parseInt(hour, 10) * 60;
+    }
+}
+function calculateMoney(long, time) {
+    /*Công thức tính cước phí grab
+    Giá tối thiểu 2 km đầu tiên là 12.000đ
+    Giá cước mỗi km tiếp theo là 3.500đ
+    Giá tính theo thời gian di chuyển (sau 2km đầu tiên) 350đ/phút
+    */
+    long = getKiloMeters(getMeters(long));
+    if (long <= 2) {
+        return long * 12000;
+    } else {
+        return 2 * 12000 + (long - 2) * 3500 + (parseInt(time) - 2) * 350;
+    }
+}
+function formatNumber(num) {
+    return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+}
+function getLocationDirectionGuest() {
+    // var LoTrinhChuyenDi = map._controls[3].container.innerText;
+    var LoTrinhChuyenDiMile = $(".mapbox-directions-route-summary h1").text();
+    LoTrinhChuyenDiMile = LoTrinhChuyenDiMile.replace("mi", "");
+    QuangDuong = LoTrinhChuyenDiMile;
+    if (getMeters(LoTrinhChuyenDiMile) > 1000) {
+        LoTrinhChuyenDiMile = getKiloMeters(getMeters(LoTrinhChuyenDiMile)).toLocaleString(undefined, { minimumFractionDigits: 0 }) + "km"
+    } else {
+        LoTrinhChuyenDiMile = getMeters(LoTrinhChuyenDiMile).toLocaleString(undefined, { minimumFractionDigits: 0 }) + "m"
+    }
+    var LoTrinhChuyenDiTime = $(".mapbox-directions-route-summary span").text();
+    ThoiGian = ConvertToMinute(LoTrinhChuyenDiTime);
+    Money = calculateMoney(QuangDuong, ThoiGian);
+    document.getElementById("LoTrinhChuyenDi").innerHTML = "<span style='font-size: 25px;'>" + LoTrinhChuyenDiMile + " " + LoTrinhChuyenDiTime + "</span>";
+    document.getElementById("TienDi").innerHTML = "<span style='font-size: 25px;'>" + formatter.format(Money) + "</span>";
+    LoactionFrom = $('#mapbox-directions-origin-input input').val();
+    LocationTo = $('#mapbox-directions-destination-input input').val();
+    console.log(LoactionFrom, LocationTo);
+}
+function findDriver() {
+    // $.ajax({
+    //     url: '/api/appuser',
+    //     type: 'POST',
+    //     data: {UserName: "ajsajs",Email: "asdhsa", UserType:"Driver"}
+    // }).done(function (data) {
+    //     console.log(data);
+    // });
+    $.ajax({
+        url: '/api/driver',
+        type: 'GET'
+    }).done(function (data) {
+        console.log(data);
+    });
+}
 function Direction() {
     if ($(".mapbox-directions-instructions")[0]) {
         $(".mapbox-directions-instructions").hide();
-    } else if(!$(".mapbox-directions-instructions")[0]) {
+    } else if (!$(".mapbox-directions-instructions")[0]) {
         $(".mapbox-directions-instructions").show();
     }
 }
@@ -82,28 +160,6 @@ $(document).ready(function () {
 });
 mapboxgl.accessToken = 'pk.eyJ1IjoibWluaG50dXllbiIsImEiOiJjazEwNWkyMWcwMjRhM2hwYmVybWlmenN4In0.w81DZILIiJNnmQV4Dg6JYA';
 function getInputLocation() {
-    // var mapboxClient = mapboxSdk({ accessToken: mapboxgl.accessToken });
-    // mapboxClient.geocoding.forwardGeocode({
-    //     query: 'Wellington, New Zealand',
-    //     autocomplete: false,
-    //     limit: 1
-    // })
-    //     .send()
-    //     .then(function (response) {
-    //         if (response && response.body && response.body.features && response.body.features.length) {
-    //             var feature = response.body.features[0];
-
-    //             var map = new mapboxgl.Map({
-    //                 container: 'map',
-    //                 style: 'mapbox://styles/mapbox/'+layer,
-    //                 center: feature.center,
-    //                 zoom: 10
-    //             });
-    //             new mapboxgl.Marker()
-    //                 .setLngLat(feature.center)
-    //                 .addTo(map);
-    //         }
-    //     });
     if (!$(".mapboxgl-ctrl-directions")[0]) {
         map.addControl(new MapboxDirections({
             accessToken: mapboxgl.accessToken
@@ -116,10 +172,10 @@ function getInputLocation() {
     } else {
         map.setLayoutProperty('points', 'visibility', 'visible');
     }
-    
+
     if (sessionStorage.getItem("Latitude") != null && sessionStorage.getItem("Latitude") != "" && sessionStorage.getItem("Longitude") != null && sessionStorage.getItem("Longitude") != "") {
-        $('#mapbox-directions-origin-input input').val(sessionStorage.getItem("Longitude")+','+sessionStorage.getItem("Latitude"));
-        
+        $('#mapbox-directions-origin-input input').val(sessionStorage.getItem("Longitude") + ',' + sessionStorage.getItem("Latitude"));
+
     }
     $('#mapbox-directions-origin-input input').focus();
 }
@@ -138,13 +194,25 @@ function getLocation() {
         // x.innerHTML = "Geolocation is not supported by this browser.";
     }
 }
-
+// var n =1000;
+// var value = n.toLocaleString(
+//     undefined,{ minimumFractionDigits: 2 }
+//   );
+//   console.log(value);
 var map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/' + layer,
     center: [105.8444083, 21.004097599999998],
     zoom: 15
 });
+if (sessionStorage.getItem("Latitude") != null && sessionStorage.getItem("Latitude") != "" && sessionStorage.getItem("Longitude") != null && sessionStorage.getItem("Longitude") != "") {
+    map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/' + layer,
+        center: [sessionStorage.getItem("Longitude"), sessionStorage.getItem("Latitude")],
+        zoom: 15
+    });
+}
 
 $(function () {
     // Getter
