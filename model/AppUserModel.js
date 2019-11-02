@@ -15,6 +15,7 @@ const AppUserSchema = new mongoose.Schema({
         require: true,
     },
     Avatar: {
+        default:"/image/favicon.png",
         type: String,
         require: true,
     },
@@ -23,7 +24,21 @@ const AppUserSchema = new mongoose.Schema({
         require: true,
     },
     CurrentPosition:{
+        default:[],
         type: Array,
+        require: true,
+    },
+    Phone:{
+        type: String,
+        require: true,
+    },
+    Money:{
+        type: Number,
+        default:0,
+        require: true,
+    },
+    BikeLicensePlace:{
+        type: String,
         require: true,
     },
     CreatedDate: {
@@ -31,6 +46,7 @@ const AppUserSchema = new mongoose.Schema({
         default: new Date(),
     },
     CreatedBy: {
+        default:"Admin",
         type: String,
         require: true,
     },

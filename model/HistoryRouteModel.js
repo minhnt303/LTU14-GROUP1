@@ -4,6 +4,10 @@ const HistoryRouteSchema = new mongoose.Schema({
         type: String,
         require: true,
     },
+    DriverId:{
+        type: String,
+        require: true,
+    },
     AppUserType:{
         type: String,
         require: true,

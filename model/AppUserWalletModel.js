@@ -23,5 +23,5 @@ const HistoryRouteSchema = new mongoose.Schema({
     },
 });
 
-const historyRouteModel = mongoose.model('HistoryRoute', HistoryRouteSchema);
+const historyRouteModel = mongoose.model('AppUserWallet', HistoryRouteSchema);
 module.exports = historyRouteModel;

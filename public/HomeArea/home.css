@@ -33,7 +33,7 @@ body {
     padding-left: 15px;
 }
 
-#zoomMap{
+#zoomMap {
     position: absolute;
     bottom: 0;
     z-index: 20;
@@ -41,10 +41,12 @@ body {
     left: 0;
     padding-left: 25px;
 }
-#zoomMap a{
+
+#zoomMap a {
     box-shadow: 1px 1px 1px 1px #888888;
 }
-#zoomInMap{
+
+#zoomInMap {
     position: absolute;
     bottom: 0;
     z-index: 20;
@@ -52,10 +54,12 @@ body {
     left: 0;
     padding-left: 25px;
 }
-#zoomInMap a{
+
+#zoomInMap a {
     box-shadow: 1px 1px 1px 1px #888888;
 }
-#mapCurrentPosition{
+
+#mapCurrentPosition {
     position: absolute;
     top: 0;
     z-index: 20;
@@ -63,49 +67,88 @@ body {
     right: 0;
     padding-right: 75px;
 }
-#mapCurrentPosition a{
+
+#mapCurrentPosition a {
     box-shadow: 1px 1px 1px 1px #888888;
 }
-#mapCurrentPosition2 a{
+
+#mapCurrentPosition2 a {
     box-shadow: 1px 1px 1px 1px #888888;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    width: 100%;
+    margin-bottom: 15px;
 }
-#InputLocation a{
+
+#LocationDirectionGuest a {
     box-shadow: 1px 1px 1px 1px #888888;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    width: 100%;
+    margin-bottom: 15px;
 }
-#CallDriver a{
+
+#InputLocation a {
     box-shadow: 1px 1px 1px 1px #888888;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    width: 100%;
+    margin-bottom: 15px;
 }
-.btn-info{
-    color: #fff !important;    
+
+#CallDriver a {
+    box-shadow: 1px 1px 1px 1px #888888;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.btn-info {
+    color: #fff !important;
     background-color: #616161 !important;
     border-color: #bdbdbd !important;
 }
-.btn-info:hover{
-    color: #fff !important;    
+
+.btn-info:hover {
+    color: #fff !important;
     background-color: #bdbdbd !important;
     border-color: #eeeeee !important;
 }
-.btn-success{
-    color: #fff !important;    
+
+.btn-success {
+    color: #fff !important;
     background-color: #616161 !important;
     border-color: #bdbdbd !important;
 }
-.btn-success:hover{
-    color: #fff !important;    
+
+.btn-success:hover {
+    color: #fff !important;
     background-color: #bdbdbd !important;
     border-color: #eeeeee !important;
 }
-.mapboxgl-ctrl-top-right{
+
+.mapboxgl-ctrl-top-right {
     z-index: 30;
 }
-#settingLayerButton{
+
+#settingLayerButton {
     position: absolute;
     bottom: 0;
     right: 0;
     padding-bottom: 30px;
     padding-right: 30px;
 }
-#settingLayerButton a{
+
+#settingLayerButton a {
     border-radius: 50%;
     border: 2px solid rgb(97, 97, 97);
     height: 30px;
@@ -118,11 +161,13 @@ body {
     border-color: rgb(97, 97, 97) !important;
     box-shadow: 1px 1px 1px 1px #888888;
 }
-#settingLayerButton a:hover{
+
+#settingLayerButton a:hover {
     background-color: #757575;
     box-shadow: 1px 1px 1px 1px #888888;
 }
-#menu{
+
+#menu {
     border: 2px solid rgb(97, 97, 97);
     border-radius: 15px;
     height: 44px;
@@ -135,17 +180,21 @@ body {
     color: white;
     box-shadow: 1px 1px 1px 1px #888888;
 }
-.navBarArea{
+
+.navBarArea {
     position: absolute;
     right: 0;
     padding-top: 30px;
     padding-right: 30px;
 }
-.navBarArea a{
+
+.navBarArea a {
     cursor: pointer;
     padding-right: 10px;
 }
-.navBarItem{
+
+.navBarItem {
+    background: white;
     z-index: 50;
     width: 250px;
     border: 2px solid #bdbdbd;
@@ -153,46 +202,174 @@ body {
     border-radius: 20px;
     box-shadow: 1px 1px 1px 1px #888888;
 }
-#isLogin,#isNotLogin,#isLoginDriver{
+
+#isLogin,
+#isNotLogin,
+#isLoginDriver {
     text-align: center;
 }
-#isLogin img{
+
+#isLogin img {
     height: 110px;
     width: 110px;
     border-radius: 50%;
     border: 2px solid #bdbdbd;
     box-shadow: 1px 1px 1px 1px #888888;
 }
-#isLogin div{
+
+#isLogin div {
     font-size: 17px;
     margin-top: 10px;
     color: #616161;
     cursor: pointer;
 }
-#isLoginDriver img{
+
+#isLoginDriver img {
     height: 110px;
     width: 110px;
     border-radius: 50%;
     border: 2px solid #bdbdbd;
     box-shadow: 1px 1px 1px 1px #888888;
 }
-#isLoginDriver div{
+
+#isLoginDriver div {
     font-size: 17px;
     margin-top: 10px;
     color: #616161;
     cursor: pointer;
 }
-.logOutDetail{
+
+.logOutDetail {
     padding-top: 10px;
     border-top: 2px solid #bdbdbd;
 }
-#isNotLogin div{
+
+#isNotLogin div {
     font-size: 17px;
     margin-top: 10px;
     color: #616161;
     cursor: pointer;
 }
-.registerDetail{
+
+.registerDetail {
     padding-top: 10px;
     border-top: 2px solid #bdbdbd;
+}
+
+.mapItemTab {
+    box-shadow: 1px 1px 1px 1px #888888;
+    width: 95%;
+    margin-left: 15px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+.driverImage {
+    box-shadow: 1px 1px 1px 1px #888888;
+    border-radius: 4px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+.driverImage .imgAvatar{
+    text-align: center;
+}
+.driverImage img {
+    box-shadow: 1px 1px 1px 1px #888888;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 15px;
+}
+
+#driverGenerator div {
+    padding-left: 0px;
+}
+
+#driverGenerator {
+    height: 57%;
+    overflow: overlay;
+}
+#driverGenerator .col-sm-6{
+    margin-bottom: 15px;
+}
+.driverInfo{
+    padding-left: 15px !important;
+    padding-right: 0px !important;
+    display: grid;
+}
+.driverInfo button{
+    margin-top: 15px;
+    padding-right: 0px !important;
+    width: 100%;
+    background-color: #757575;
+    color: white;
+    box-shadow: 1px 1px 1px 1px #888888;
+}
+.driverInfo .col-sm-12{
+    padding-right: 0px !important;
+}
+.driverInfoPickup{
+    padding-left: 15px !important;
+    padding-right: 0px !important;
+    display: grid;
+}
+.driverInfoPickup button{
+    margin-top: 15px;
+    padding-right: 0px !important;
+    background-color: #757575;
+    color: white;
+    box-shadow: 1px 1px 1px 1px #888888;
+}
+.driverInfoPickup button:first-child{
+    width: 48%;
+}
+.driverInfoPickup button:last-child{
+    margin-left: 1%;
+    width: 48%;
+}
+.driverInfoPickup .col-sm-12{
+    padding-right: 0px !important;
+    padding-left: 0px !important;
+}
+
+input{
+    width: 100%;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-size: 15px;
+    border-radius: 4px;
+}
+.clearBoth{
+    width: 100%;
+    height: 10px;
+}
+select{
+    width: 100%;
+    height: 30px;
+    border-radius: 4px;
+    padding-left: 10px;
+}
+#waringAlert{
+    position: absolute;
+    top: 20px;
+    right: 50px;
+    z-index: 2000;
+    display: none;
+    padding: 10px 15px 12px 15px;   
+    background-image: linear-gradient(to right, #f44336, #f44336);
+    color: white;
+    border-radius: 10px;
+}
+#successAlert{
+    position: absolute;
+    top: 20px;
+    right: 50px;
+    z-index: 2000;
+    display: none;
+    padding: 10px 15px 12px 15px;   
+    background-image: linear-gradient(to right, #4caf50, #a5d6a7);
+    color: white;
+    border-radius: 10px;
 }

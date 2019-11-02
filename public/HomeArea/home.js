@@ -12,12 +12,7 @@ const formatter = new Intl.NumberFormat('en-US', {
     minimumFractionDigits: 2
 });
 
-if (sessionStorage.getItem("userType") == null) {
-    $("#isLoginDriver").hide();
-    $("#isLogin").hide();
-    $("#isNotLogin").show();
-}
-else if (sessionStorage.getItem("userType") == "Customer") {
+if (sessionStorage.getItem("userType") == "Customer") {
     $("#isLoginDriver").hide();
     $("#isLogin").show();
     $("#isNotLogin").hide();
@@ -26,6 +21,10 @@ else if (sessionStorage.getItem("userType") == "Driver") {
     $("#isLoginDriver").show();
     $("#isLogin").hide();
     $("#isNotLogin").hide();
+}else{
+    $("#isLoginDriver").hide();
+    $("#isLogin").hide();
+    $("#isNotLogin").show();
 }
 function getMeters(i) {
     return i * 1609;
@@ -88,12 +87,183 @@ function findDriver() {
     //     console.log(data);
     // });
     $.ajax({
-        url: '/api/driver',
+        url: '/api/finddriver/10/20',
+        type: 'GET'
+    }).done(function (data) {
+        var driverBox = ``;
+        data.forEach(element => {
+            driverBox += `<div class="col-sm-6">
+            <div class="col-sm-12 driverImage">
+                <div class="imgAvatar">
+                    <img src="${element.Avatar}">
+                </div>
+                    <div class="col-sm-12 driverInfo">
+                        <span>Lái xe: <b>${ShowMessageIfEmpty(element.UserName)}</b></span>
+                        <span>Biển số xe: <b>${ShowMessageIfEmpty(element.BikeLicensePlace)}</b></span>
+                        <span>Điện thoại: <b>${ShowMessageIfEmpty(element.Phone)}</b></span>
+                        <div class="col-sm-12">
+                            <button class="btn btn-sm" onclick="ChoseDriver('${element._id}')">Chọn lái xe</button>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        });
+        document.getElementById("driverGenerator").innerHTML = driverBox;
+    });
+}
+function ChoseDriver(id) {
+    console.log(id);
+    $("#mapCurrentPosition2").hide();
+    $("#InputLocation").hide();
+    $("#LocationDirectionGuest").hide();
+    $("#CallDriver").hide();
+    $("#driverGenerator").hide();
+    $("#driverPickerAreaInfo").show();
+    $.ajax({
+        url: '/api/chosedriver/' + id,
         type: 'GET'
     }).done(function (data) {
         console.log(data);
+        var driverBoxInfo = `<div class="col-sm-12 driverImage">
+        <div class="imgAvatar">
+            <img src="${data[0].Avatar}">
+        </div>
+            <div class="col-sm-12 driverInfoPickup">
+                <span>Lái xe: <b>${ShowMessageIfEmpty(data[0].UserName)}</b></span>
+                <span>Biển số xe: <b>${ShowMessageIfEmpty(data[0].BikeLicensePlace)}</b></span>
+                <span>Điện thoại: <b>${ShowMessageIfEmpty(data[0].Phone)}</b></span>
+                <div class="col-sm-12" id="CloseChoseDriver">
+                    <button class="btn btn-sm" onclick="PaymentDriver('${data[0]._id}')">Thanh toán</button>
+                    <button class="btn btn-sm" onclick="CloseChoseDriver()">Hủy chuyến</button>
+                </div>
+            </div>
+        </div>`;
+        document.getElementById("driverPickerAreaInfo").innerHTML = driverBoxInfo;
     });
 }
+function CloseChoseDriver() {
+    $("#mapCurrentPosition2").show();
+    $("#InputLocation").show();
+    $("#LocationDirectionGuest").show();
+    $("#CallDriver").show();
+    $("#driverGenerator").show();
+    $("#driverPickerAreaInfo").hide();
+}
+function PaymentDriver(id) {
+    // document.getElementById("driverPickerAreaInfo").innerHTML = document.getElementById("driverPickerAreaInfo").innerHTML + `
+    //             <div class="col-sm-12" style="padding:0px">
+    //                 <div class="alert alert-success alert-dismissible fade in">
+    //                     <a href="#" class="close" data-dismiss="alert" aria-label="close" style="top: -8px;">&times;</a>
+    //                     <strong>Thanh toán thành công!</strong> Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.
+    //                 </div>
+    //             </div>`;
+    //             document.getElementById("CloseChoseDriver").innerHTML = `
+    //                 <button class="btn btn-sm" onclick="CloseChoseDriver()"style="width: 95%;">Đóng</button>
+    //             `;
+    if (sessionStorage.getItem("LoginId") != null && sessionStorage.getItem("LoginId") != "") {
+        $.ajax({
+            url: '/api/paymentdriver/',
+            type: 'POST',
+            data: { LoginId: sessionStorage.getItem("LoginId"), DriverId: id, "Money": Money, "LocationFrom": LoactionFrom, "LocationTo": LocationTo },
+            success: (data) => {
+                console.log("Thanh toán thành công!")
+                document.getElementById("driverPickerAreaInfo").innerHTML = document.getElementById("driverPickerAreaInfo").innerHTML + `
+                <div class="col-sm-12" style="padding:0px">
+                    <div class="alert alert-success alert-dismissible fade in">
+                        <a href="#" class="close" data-dismiss="alert" aria-label="close" style="top: -8px;">&times;</a>
+                        <strong>Thanh toán thành công!</strong> Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.
+                    </div>
+                </div>`;
+                document.getElementById("CloseChoseDriver").innerHTML = `
+                    <button class="btn btn-sm" onclick="CloseChoseDriver()"style="width: 95%;">Đóng</button>
+                `;
+            },
+        });
+        $.ajax({
+            url: '/api/getmoney/' + sessionStorage.getItem("LoginId"),
+            type: 'GET'
+        }).done(function (data) {
+            document.getElementById("moneyArea").innerHTML = data.Money;
+        });
+    }
+}
+
+$("#BikeLicensePlaceRegister").hide();
+$("#BikeLicensePlaceText").hide();
+function ChoseUserType() {
+    if (document.getElementById("UserTypeRegister").value == "Driver") {
+        $("#BikeLicensePlaceRegister").show();
+        $("#BikeLicensePlaceText").show();
+    }
+    else {
+        $("#BikeLicensePlaceRegister").hide();
+        $("#BikeLicensePlaceText").hide();
+    }
+}
+document.getElementById('register-button').addEventListener('click', (e) => {
+    let Email = document.getElementById("EmailRegister").value;
+    let Password = document.getElementById("PasswordREgister").value;
+    let UserName = document.getElementById("UserNameRegister").value;
+    let Phone = document.getElementById("PhoneRegister").value;
+    let UserType = document.getElementById("UserTypeRegister").value;
+    let BikeLicensePlace = document.getElementById("BikeLicensePlaceRegister").value;
+    if (UserType != "-1") {
+        $.ajax({
+            url: '/api/appuser',
+            type: 'POST',
+            data: { Email: Email, Password: Password, UserName: UserName, Phone: Phone, UserType: UserType, BikeLicensePlace: BikeLicensePlace },
+            success: (data) => {
+                console.log("Đăng ký tài khoản thành công!");
+                sessionStorage.setItem("userType",UserType);
+                sessionStorage.setItem("LoginId",data._id);
+                $('.close').click();
+                if (UserType == "Customer") {
+                    $("#isLoginDriver").hide();
+                    $("#isLogin").show();
+                    $("#isNotLogin").hide();
+                }
+                else if (UserType == "Driver") {
+                    $("#isLoginDriver").show();
+                    $("#isLogin").hide();
+                    $("#isNotLogin").hide();
+                }
+            },
+        });
+    }
+});
+document.getElementById('login-button').addEventListener('click', (e) => {
+    let Email = document.getElementById("EmailLogin").value;
+    let Password = document.getElementById("PasswordLogin").value;
+    if(Email == "" || Password == "" || Email == null|| Password == null){
+        PopupError("Bạn chưa nhập Email và mật khẩu đăng nhập!");
+    }else{
+        $.ajax({
+            url: '/api/appuser/'+Email+'/'+Password,
+            type: 'GET',
+            success: (data) => {
+                console.log("Đăng nhập tài khoản thành công!");
+                console.log(data);
+                sessionStorage.setItem("userType",data.UserType);
+                sessionStorage.setItem("LoginId",data._id);
+                $('.close').click();
+                if (data.UserType == "Customer") {
+                    $("#isLoginDriver").hide();
+                    $("#isLogin").show();
+                    $("#isNotLogin").hide();
+                }
+                else if (data.UserType == "Driver") {
+                    $("#isLoginDriver").show();
+                    $("#isLogin").hide();
+                    $("#isNotLogin").hide();
+                }
+                PopupError("Đăng nhập tài khoản thành công!");
+            },
+            error: (error) => { console.log(error) 
+                PopupError("Sai Email hoặc mật khẩu đăng nhập!");
+            }
+        });
+    }
+});
 function Direction() {
     if ($(".mapbox-directions-instructions")[0]) {
         $(".mapbox-directions-instructions").hide();
