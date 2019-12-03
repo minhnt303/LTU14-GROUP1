@@ -1,6 +1,7 @@
 // import * as AppUserConstant from '../HomeArea/AppUserConstant';
 // var appUserType = AppUserConstant;
 // var a = appUserType.Customer;
+
 var QuangDuong = "";
 var ThoiGian = "";
 var Money = "";
@@ -12,6 +13,30 @@ const formatter = new Intl.NumberFormat('en-US', {
     minimumFractionDigits: 2
 });
 
+var layer = "streets-v11";
+if (sessionStorage.getItem("mapLayer") != null && sessionStorage.getItem("mapLayer") != "") {
+    layer = sessionStorage.getItem("mapLayer");
+    $("#" + layer).prop("checked", true);
+} else {
+    $("#streets-v11").prop("checked", true);
+}
+mapboxgl.accessToken = 'pk.eyJ1IjoibWluaG50dXllbiIsImEiOiJjazEwNWkyMWcwMjRhM2hwYmVybWlmenN4In0.w81DZILIiJNnmQV4Dg6JYA';
+
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/' + layer,
+    center: [105.8444083, 21.004097599999998],
+    zoom: 15
+});
+var dataProvince = {
+    "type": "FeatureCollection",
+    "features": []
+};
+map.on('load', function () {
+    map.loadImage('/image/car.png', function (error, image) {
+        map.addImage('CarIcon', image);
+    });
+});
 if (sessionStorage.getItem("userType") == "Customer") {
     $("#isLoginDriver").hide();
     $("#isLogin").show();
@@ -21,7 +46,7 @@ else if (sessionStorage.getItem("userType") == "Driver") {
     $("#isLoginDriver").show();
     $("#isLogin").hide();
     $("#isNotLogin").hide();
-}else{
+} else {
     $("#isLoginDriver").hide();
     $("#isLogin").hide();
     $("#isNotLogin").show();
@@ -79,37 +104,101 @@ function getLocationDirectionGuest() {
     console.log(LoactionFrom, LocationTo);
 }
 function findDriver() {
-    // $.ajax({
-    //     url: '/api/appuser',
-    //     type: 'POST',
-    //     data: {UserName: "ajsajs",Email: "asdhsa", UserType:"Driver"}
-    // }).done(function (data) {
-    //     console.log(data);
-    // });
-    $.ajax({
-        url: '/api/finddriver/10/20',
-        type: 'GET'
-    }).done(function (data) {
-        var driverBox = ``;
-        data.forEach(element => {
-            driverBox += `<div class="col-sm-6">
-            <div class="col-sm-12 driverImage">
-                <div class="imgAvatar">
-                    <img src="${element.Avatar}">
-                </div>
-                    <div class="col-sm-12 driverInfo">
-                        <span>Lái xe: <b>${ShowMessageIfEmpty(element.UserName)}</b></span>
-                        <span>Biển số xe: <b>${ShowMessageIfEmpty(element.BikeLicensePlace)}</b></span>
-                        <span>Điện thoại: <b>${ShowMessageIfEmpty(element.Phone)}</b></span>
-                        <div class="col-sm-12">
-                            <button class="btn btn-sm" onclick="ChoseDriver('${element._id}')">Chọn lái xe</button>
+    dataProvince.features = [];
+    var long = "";
+    var lat = "";
+    if (sessionStorage.getItem("Latitude") != null && sessionStorage.getItem("Latitude") != "" && sessionStorage.getItem("Longitude") != null && sessionStorage.getItem("Longitude") != "") {
+        lat = sessionStorage.getItem("Latitude");
+        long = sessionStorage.getItem("Longitude");
+        console.log(long, lat)
+        console.log('/api/finddriver/' + lat + '/' + long)
+        $.ajax({
+            url: '/api/finddriver/21.00414/105.8443332',
+            type: 'GET'
+        }).done(function (data) {
+            var driverBox = ``;
+            var idx = 0;
+            data.forEach(element => {
+                driverBox += `<div class="col-sm-6">
+                <div class="col-sm-12 driverImage">
+                    <div class="imgAvatar">
+                        <img src="${element.Avatar}">
+                    </div>
+                        <div class="col-sm-12 driverInfo">
+                            <span>Lái xe: <b>${ShowMessageIfEmpty(element.UserName)}</b></span>
+                            <span>Biển số xe: <b>${ShowMessageIfEmpty(element.BikeLicensePlace)}</b></span>
+                            <span>Điện thoại: <b>${ShowMessageIfEmpty(element.Phone)}</b></span>
+                            <div class="col-sm-12">
+                                <button class="btn btn-sm" onclick="ChoseDriver('${element._id}')">Chọn lái xe</button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>`;
+                </div>`;
+                dataProvince.features[idx] = {
+                    "type": "Feature",
+                    "properties": {
+                        "message": element.UserName,
+                        "MoTaLaiXe": "<strong style='color:#428BCA;'>" + element.UserName + "</strong><br/><p>Biển số xe: " + element.BikeLicensePlace + "</p><p>SĐT: " + element.Phone + "</p>",
+                    },
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [element.CurrentPosition[0].LongitudePosition, element.CurrentPosition[0].LatitudePosition]
+                    }
+                }
+                idx += 1;
+            });
+            document.getElementById("driverGenerator").innerHTML = driverBox;
+            if (map.getLayer("CarLayer")) {
+                map.removeLayer("CarLayer");
+            }
+            if (map.getSource("CarSource")) {
+                window.setInterval(function () {
+                    map.getSource("CarSource").setData(dataProvince);
+                }, 2000);
+            } else {
+                map.addSource("CarSource", {
+                    "type": "geojson",
+                    "data": dataProvince,
+                });
+            }
+            map.addLayer({
+                "id": "CarLayer",
+                "type": "symbol",
+                "source": "CarSource",
+                "layout": {
+                    "text-field": ["get", "message"],
+                    "text-size": 10,
+                    "text-variable-anchor": ["top", "bottom", "left", "right"],
+                    "text-radial-offset": 0.5,
+                    "text-justify": "auto",
+                    "icon-image": "CarIcon",
+                    "icon-size": 0.08,
+                    "text-max-width": 8
+                }
+            });
+            map.on('click', "CarLayer", function (e) {
+                var coordinates = e.features[0].geometry.coordinates;
+                var MoTaLaiXe = e.features[0].properties.MoTaLaiXe;
+                while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                    coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                }
+                map.flyTo({
+                    center: coordinates
+                });
+                new mapboxgl.Popup()
+                    .setLngLat(coordinates)
+                    .setHTML(MoTaLaiXe)
+                    .addTo(map);
+
+            });
+            map.on('mouseenter', "CarLayer", function () {
+                map.getCanvas().style.cursor = 'pointer';
+            });
+            map.on('mouseleave', "CarLayer", function () {
+                map.getCanvas().style.cursor = '';
+            });
         });
-        document.getElementById("driverGenerator").innerHTML = driverBox;
-    });
+    }
 }
 function ChoseDriver(id) {
     console.log(id);
@@ -207,44 +296,92 @@ document.getElementById('register-button').addEventListener('click', (e) => {
     let Phone = document.getElementById("PhoneRegister").value;
     let UserType = document.getElementById("UserTypeRegister").value;
     let BikeLicensePlace = document.getElementById("BikeLicensePlaceRegister").value;
-    if (UserType != "-1") {
-        $.ajax({
-            url: '/api/appuser',
-            type: 'POST',
-            data: { Email: Email, Password: Password, UserName: UserName, Phone: Phone, UserType: UserType, BikeLicensePlace: BikeLicensePlace },
-            success: (data) => {
-                console.log("Đăng ký tài khoản thành công!");
-                sessionStorage.setItem("userType",UserType);
-                sessionStorage.setItem("LoginId",data._id);
-                $('.close').click();
-                if (UserType == "Customer") {
-                    $("#isLoginDriver").hide();
-                    $("#isLogin").show();
-                    $("#isNotLogin").hide();
+    if (Email == "" || Email == null || Password == "" || Password == null || UserName == "" || UserName == null || Phone == "" || Phone == null) {
+        PopupError("Bạn chưa nhập đầy đủ thông tin đăng ký!");
+    } else {
+        console.log(UserType)
+        if (UserType != "-1") {
+            if ($('#BikeLicensePlaceRegister').css('display') == 'none') {
+                $.ajax({
+                    url: '/api/appuser',
+                    type: 'POST',
+                    data: { Email: Email, Password: Password, UserName: UserName, Phone: Phone, UserType: UserType, BikeLicensePlace: BikeLicensePlace },
+                    success: (data) => {
+                        console.log(data)
+                        console.log("Đăng ký tài khoản thành công!<br/>Vui lòng đăng nhập lại");
+                        // sessionStorage.setItem("userType", UserType);
+                        // sessionStorage.setItem("LoginId", data._id);
+                        $('.close').click();
+                        PopupSuccess("Đăng ký tài khoản thành công!<br/>Vui lòng đăng nhập lại");
+                        // if (UserType == "Customer") {
+                        //     $("#isLoginDriver").hide();
+                        //     $("#isLogin").show();
+                        //     $("#isNotLogin").hide();
+                        // }
+                        // else if (UserType == "Driver") {
+                        //     $("#isLoginDriver").show();
+                        //     $("#isLogin").hide();
+                        //     $("#isNotLogin").hide();
+                        // }
+                        jQuery.noConflict();
+                        $('#myModalLogin').modal('show');
+                    }, error: (error) => {
+                        console.log(error)
+                        PopupError("Email này đã có người đăng ký!");
+                    }
+                });
+            } else if ($('#BikeLicensePlaceRegister').css('display') != 'none') {
+                if (BikeLicensePlace == "" || BikeLicensePlace == null) {
+                    PopupError("Bạn chưa nhập biển số xe!");
+                } else {
+                    $.ajax({
+                        url: '/api/appuser',
+                        type: 'POST',
+                        data: { Email: Email, Password: Password, UserName: UserName, Phone: Phone, UserType: UserType, BikeLicensePlace: BikeLicensePlace },
+                        success: (data) => {
+                            console.log("Đăng ký tài khoản thành công!<br/>Vui lòng đăng nhập lại");
+                            // sessionStorage.setItem("userType", UserType);
+                            // sessionStorage.setItem("LoginId", data._id);
+                            $('.close').click();
+                            PopupSuccess("Đăng ký tài khoản thành công!<br/>Vui lòng đăng nhập lại");
+                            // if (UserType == "Customer") {
+                            //     $("#isLoginDriver").hide();
+                            //     $("#isLogin").show();
+                            //     $("#isNotLogin").hide();
+                            // }
+                            // else if (UserType == "Driver") {
+                            //     $("#isLoginDriver").show();
+                            //     $("#isLogin").hide();
+                            //     $("#isNotLogin").hide();
+                            // }
+                            jQuery.noConflict();
+                            $('#myModalLogin').modal('show');
+                        }, error: (error) => {
+                            console.log(error)
+                            PopupError("Email này đã có người đăng ký!");
+                        }
+                    });
                 }
-                else if (UserType == "Driver") {
-                    $("#isLoginDriver").show();
-                    $("#isLogin").hide();
-                    $("#isNotLogin").hide();
-                }
-            },
-        });
+            }
+        } else if (UserType == "-1") {
+            PopupError("Bạn chưa chọn loại người dùng!");
+        }
     }
 });
 document.getElementById('login-button').addEventListener('click', (e) => {
     let Email = document.getElementById("EmailLogin").value;
     let Password = document.getElementById("PasswordLogin").value;
-    if(Email == "" || Password == "" || Email == null|| Password == null){
+    if (Email == "" || Password == "" || Email == null || Password == null) {
         PopupError("Bạn chưa nhập Email và mật khẩu đăng nhập!");
-    }else{
+    } else {
         $.ajax({
-            url: '/api/appuser/'+Email+'/'+Password,
+            url: '/api/appuser/' + Email + '/' + Password,
             type: 'GET',
             success: (data) => {
                 console.log("Đăng nhập tài khoản thành công!");
                 console.log(data);
-                sessionStorage.setItem("userType",data.UserType);
-                sessionStorage.setItem("LoginId",data._id);
+                sessionStorage.setItem("userType", data.UserType);
+                sessionStorage.setItem("LoginId", data._id);
                 $('.close').click();
                 if (data.UserType == "Customer") {
                     $("#isLoginDriver").hide();
@@ -256,14 +393,32 @@ document.getElementById('login-button').addEventListener('click', (e) => {
                     $("#isLogin").hide();
                     $("#isNotLogin").hide();
                 }
-                PopupError("Đăng nhập tài khoản thành công!");
+                DisplayUserInfo(data);
+                PopupSuccess("Đăng nhập tài khoản thành công!");
             },
-            error: (error) => { console.log(error) 
+            error: (error) => {
+                console.log(error)
                 PopupError("Sai Email hoặc mật khẩu đăng nhập!");
             }
         });
     }
 });
+document.getElementById('logOut').addEventListener('click', (e) => {
+    sessionStorage.removeItem("userType");
+    sessionStorage.removeItem("LoginId");
+    $("#isLoginDriver").hide();
+    $("#isLogin").hide();
+    $("#isNotLogin").show();
+    PopupSuccess("Đăng xuất tài khoản thành công!");
+});
+function logOut() {
+    sessionStorage.removeItem("userType");
+    sessionStorage.removeItem("LoginId");
+    $("#isLoginDriver").hide();
+    $("#isLogin").hide();
+    $("#isNotLogin").show();
+    PopupSuccess("Đăng xuất tài khoản thành công!");
+}
 function Direction() {
     if ($(".mapbox-directions-instructions")[0]) {
         $(".mapbox-directions-instructions").hide();
@@ -291,15 +446,8 @@ function closeSettingLayerButton() {
     $("#openSetting").show();
     $("#menu").hide();
 }
-var layer = "streets-v11";
-if (sessionStorage.getItem("mapLayer") != null && sessionStorage.getItem("mapLayer") != "") {
-    layer = sessionStorage.getItem("mapLayer");
-    $("#" + layer).prop("checked", true);
-} else {
-    $("#streets-v11").prop("checked", true);
-}
 var windowHeight = $(window).height() - 30;
-var windowWidth = $(window).width() - 15;
+var windowWidth = $(window).width() - 30;
 var windowMinWidth = $(window).width() / 2 - 15;
 function zoomMap() {
     $("#mapCurrentPosition").show();
@@ -328,12 +476,13 @@ $(document).ready(function () {
     $("#closeNavBar").hide();
     $("#menu").hide();
 });
-mapboxgl.accessToken = 'pk.eyJ1IjoibWluaG50dXllbiIsImEiOiJjazEwNWkyMWcwMjRhM2hwYmVybWlmenN4In0.w81DZILIiJNnmQV4Dg6JYA';
+var directions = new MapboxDirections({
+    accessToken: mapboxgl.accessToken
+});
 function getInputLocation() {
     if (!$(".mapboxgl-ctrl-directions")[0]) {
-        map.addControl(new MapboxDirections({
-            accessToken: mapboxgl.accessToken
-        }), 'top-left');
+
+        map.addControl(directions, 'top-left');
     }
     var visibility = map.getLayoutProperty('points', 'visibility');
     console.log(visibility);
@@ -364,17 +513,6 @@ function getLocation() {
         // x.innerHTML = "Geolocation is not supported by this browser.";
     }
 }
-// var n =1000;
-// var value = n.toLocaleString(
-//     undefined,{ minimumFractionDigits: 2 }
-//   );
-//   console.log(value);
-var map = new mapboxgl.Map({
-    container: 'map',
-    style: 'mapbox://styles/mapbox/' + layer,
-    center: [105.8444083, 21.004097599999998],
-    zoom: 15
-});
 if (sessionStorage.getItem("Latitude") != null && sessionStorage.getItem("Latitude") != "" && sessionStorage.getItem("Longitude") != null && sessionStorage.getItem("Longitude") != "") {
     map = new mapboxgl.Map({
         container: 'map',
@@ -551,3 +689,58 @@ function showPosition(position) {
     }
 }
 
+$(function () {
+    //make connection
+    var socket = io.connect('http://localhost:3000')
+
+    //buttons and inputs
+    var message = $("#message")
+    var username = $("#username")
+    var send_message = $("#send_message")
+    var send_username = $("#send_username")
+    var chatroom = $("#chatroom")
+    var feedback = $("#feedback")
+
+    //Emit message
+    send_message.click(function () {
+        socket.emit('new_message', { message: message.val() })
+    })
+
+    //Listen on new_message
+    socket.on("new_message", (data) => {
+        feedback.html('');
+        message.val('');
+        chatroom.append("<p class='message'>" + data.username + ": " + data.message + "</p>")
+    })
+
+    $('#message').keyup(function (e) {
+        if (e.keyCode == 13) {
+            socket.emit('new_message', { message: message.val() })
+        }
+    });
+
+    //Emit a username
+    send_username.click(function () {
+        socket.emit('change_username', { username: username.val() })
+    })
+
+    //Emit typing
+    message.bind("keypress", () => {
+        socket.emit('typing')
+    })
+
+    //Listen on typing
+    socket.on('typing', (data) => {
+        feedback.html("<p><i>" + data.username + " is typing a message..." + "</i></p>")
+    })
+});
+
+
+$("#closemessage").click(function () {
+    if ($('.ChatBox').css('display') == "none") {
+        $('.ChatBox').css('display', 'block');
+    } else {
+        $('.ChatBox').css('display', 'none');
+    }
+});
+$(".ChatBox").css('display', 'none');

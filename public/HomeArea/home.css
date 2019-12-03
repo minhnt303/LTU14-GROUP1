@@ -179,6 +179,9 @@ body {
     background-color: #757575;
     color: white;
     box-shadow: 1px 1px 1px 1px #888888;
+    display: inline-flex;
+    width: 500px;
+    align-items: center;
 }
 
 .navBarArea {
@@ -372,4 +375,55 @@ select{
     background-image: linear-gradient(to right, #4caf50, #a5d6a7);
     color: white;
     border-radius: 10px;
+}
+#BikeLicensePlace{
+    display: none;
+}
+.ChatBox{
+    height: 200px;
+    background-color: white;
+    width: 400px;
+    position: absolute;
+    left: 56%;    
+    bottom: 14%;
+    box-shadow: 1px 1px 1px 1px #888888;
+}
+#chatroom{
+    height: 100%;
+    background-color: white;
+    box-shadow: 1px 1px 1px 1px #888888;    
+    overflow: scroll;
+    overflow-x: hidden;
+    padding: 10px;
+}
+#input_zone{
+    background-color: white;
+    box-shadow: 1px 1px 1px 1px #888888;
+    padding: 5px;
+}
+#send_message{
+    margin-top: 5px;
+    background-color: #757575;
+    color: white;
+    box-shadow: 1px 1px 1px 1px #888888;
+}
+#close_message{
+    margin-top: 5px;
+    background-color: #757575;
+    color: white;
+    box-shadow: 1px 1px 1px 1px #888888;    
+    float: right;
+}
+#close_message a{
+    border-radius: 50%;
+    border: 2px solid rgb(97, 97, 97);
+    height: 30px;
+    width: 30px;
+    padding-top: 10px;
+    padding-bottom: 12px;
+    padding-left: 4px;
+    padding-right: 4px;
+    cursor: pointer;
+    border-color: rgb(97, 97, 97) !important;
+    box-shadow: 1px 1px 1px 1px #888888;
 }

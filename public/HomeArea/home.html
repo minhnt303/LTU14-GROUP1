@@ -36,6 +36,8 @@
     <link rel='stylesheet'
         href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.0.2/mapbox-gl-directions.css'
         type='text/css' />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
     <link href="/HomeArea/home.css" rel='stylesheet' type="text/css">
 
 </head>
@@ -149,7 +151,8 @@
                                 style="font-size: 14px;"></span> Nạp tiền</div>
                         <div class="settingDetail"><span class="glyphicon glyphicon-asterisk"
                                 style="font-size: 14px;"></span> Cài đặt</div>
-                        <div class="logOutDetail"><span class="glyphicon glyphicon-off" style="font-size: 14px;"></span>
+                        <div class="logOutDetail" id="logOut" onclick="logOut()"><span class="glyphicon glyphicon-off"
+                                style="font-size: 14px;"></span>
                             <b>Đăng xuất</b></div>
                     </div>
                     <div id="isLoginDriver">
@@ -165,7 +168,8 @@
                                 style="font-size: 14px;"></span> Ví của bạn</div>
                         <div class="settingDetail"><span class="glyphicon glyphicon-asterisk"
                                 style="font-size: 14px;"></span> Cài đặt</div>
-                        <div class="logOutDetail"><span class="glyphicon glyphicon-off" style="font-size: 14px;"></span>
+                        <div class="logOutDetail" id="logOut" onclick="logOut()"><span class="glyphicon glyphicon-off"
+                                style="font-size: 14px;"></span>
                             <b>Đăng xuất</b></div>
                     </div>
                     <div id="isNotLogin">
@@ -198,10 +202,15 @@
                     <button type="button" class="close" data-dismiss="modal" style="margin-top: -9px;">&times;</button>
                 </div>
                 <div class="modal-body">
-                    <h4>Email<span style="color: red;">*</span></h4>
-                    <input type="email" name="Email" placeholder="Email"class="form-group"id="EmailLogin"required></input>
-                    <h4>Mật khẩu<span style="color: red;">*</span></h4>
-                    <input type="password" name="Password" placeholder="Mật khẩu"class="form-group"id="PasswordLogin"required></input>
+                    <h4>Email<span style="color: red;"> *</span></h4>
+                    <input type="email" name="Email" placeholder="Email" class="form-group" id="EmailLogin"
+                        required></input>
+                    <h4>Mật khẩu<span style="color: red;"> *</span></h4>
+                    <input type="password" name="Password" placeholder="Mật khẩu" class="form-group" id="PasswordLogin"
+                        required></input>
+                    <input type="checkbox" name="RememberMe" value="RememberMe" style="width: 3%;"> Ghi nhớ đăng
+                    nhập!<br>
+                    <div class="clearBoth"></div>
                     <div class="login">
                         <button class="btn btn-default" id="login-button">Đăng nhập</button><br>
                     </div>
@@ -220,28 +229,33 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">ĐĂNG KÝ TÀI KHOẢN</h4>
-                    <button type="button" class="close" data-dismiss="modal"style="margin-top: -9px;">&times;</button>
+                    <button type="button" class="close" data-dismiss="modal" style="margin-top: -9px;">&times;</button>
                 </div>
                 <div class="modal-body">
-                        <h4>Email<span style="color: red;">*</span></h4>
-                        <input type="email" name="Email" placeholder="Email"class="form-group" id="EmailRegister"required></input>
-                        <h4>Họ và tên<span style="color: red;">*</span></h4>
-                        <input type="text" name="UserName" placeholder="Họ và tên"class="form-group" id="UserNameRegister"required></input>
-                        <h4>Mật khẩu<span style="color: red;">*</span></h4>
-                        <input type="password" name="Password" placeholder="Mật khẩu"class="form-group" id="PasswordREgister"required></input>
-                        <h4>Số điện thoại<span style="color: red;">*</span></h4>
-                        <input type="text" name="Phone" placeholder="Số điện thoại"class="form-group" id="PhoneRegister"required></input>
-                        <select id="UserTypeRegister" onchange="ChoseUserType()">
-                            <option value="-1">-- Chọn loại tài khoản --</option>
-                            <option value="Customer">Người dùng hệ thống</option>
-                            <option value="Driver">Lái xe</option>
-                        </select>
-                        <div class="clearBoth"></div>
-                        <h4 id="BikeLicensePlaceText">Biển số xe<span style="color: red;">*</span></h4>
-                        <input type="text" name="BikeLicensePlace" placeholder="Biển số xe"class="form-group" id="BikeLicensePlaceRegister"required></input>
-                        <div class="register">
-                            <button class="btn btn-default" id="register-button">Đăng ký</button><br>
-                        </div>
+                    <h4>Email<span style="color: red;"> *</span></h4>
+                    <input type="email" name="Email" placeholder="Email" class="form-group" id="EmailRegister"
+                        required></input>
+                    <h4>Họ và tên<span style="color: red;"> *</span></h4>
+                    <input type="text" name="UserName" placeholder="Họ và tên" class="form-group" id="UserNameRegister"
+                        required></input>
+                    <h4>Mật khẩu<span style="color: red;"> *</span></h4>
+                    <input type="password" name="Password" placeholder="Mật khẩu" class="form-group"
+                        id="PasswordREgister" required></input>
+                    <h4>Số điện thoại<span style="color: red;"> *</span></h4>
+                    <input type="text" name="Phone" placeholder="Số điện thoại" class="form-group" id="PhoneRegister"
+                        required></input>
+                    <select id="UserTypeRegister" onchange="ChoseUserType()">
+                        <option value="-1">-- Chọn loại tài khoản --</option>
+                        <option value="Customer">Người dùng hệ thống</option>
+                        <option value="Driver">Lái xe</option>
+                    </select>
+                    <div class="clearBoth"></div>
+                    <h4 id="BikeLicensePlaceText">Biển số xe<span style="color: red;"> *</span></h4>
+                    <input type="text" name="BikeLicensePlace" placeholder="Biển số xe" class="form-group"
+                        id="BikeLicensePlaceRegister" required></input>
+                    <div class="register">
+                        <button class="btn btn-default" id="register-button">Đăng ký</button><br>
+                    </div>
                 </div>
                 <!-- <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
@@ -251,6 +265,35 @@
         </div>
     </div>
 
+    <div class="ChatBox">
+        <!-- <section>
+        <div id="change_username">
+            <input id="username" type="text" />
+            <button id="send_username" type="button">Change username</button>
+        </div>
+    </section> -->
+
+        <section id="chatroom">
+            <section id="feedback"></section>
+        </section>
+        <section id="input_zone">
+            <input id="message" class="vertical-align" type="text" />
+            <button id="send_message" class="vertical-align" type="button">Gửi tin nhắn</button>
+            <!-- <button id="close_message" class="vertical-align" type="button">Đóng</button> -->
+        </section>
+    </div>
+
+    <div id="close_message" style="cursor: pointer;  
+        background-color: white;
+        position: absolute;
+        left: 52%;
+        bottom: 3%;
+        padding-bottom: 5px;
+        padding-top: 5px;
+        border-radius: 50%;">
+        <a id="closemessage"><img src="/image/speech-bubble.png" alt="closemessage" class="closemessage"
+                style="height: 30px; width: 30px;"></a>
+    </div>
 
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
