@@ -7,12 +7,20 @@ var ThoiGian = "";
 var Money = "";
 var LoactionFrom = "";
 var LocationTo = "";
+var socket = io.connect('http://localhost:3000')
 const formatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'VND',
     minimumFractionDigits: 2
 });
-
+if (sessionStorage.getItem('LoginId') != null && sessionStorage.getItem('LoginId') != "") {
+    $.ajax({
+        url: '/api/appuser/' + sessionStorage.getItem('LoginId'),
+        type: 'GET'
+    }).done(function (data) {
+        DisplayUserInfo(data);
+    });
+}
 var layer = "streets-v11";
 if (sessionStorage.getItem("mapLayer") != null && sessionStorage.getItem("mapLayer") != "") {
     layer = sessionStorage.getItem("mapLayer");
@@ -35,6 +43,9 @@ var dataProvince = {
 map.on('load', function () {
     map.loadImage('/image/car.png', function (error, image) {
         map.addImage('CarIcon', image);
+    });
+    map.loadImage('/image/map-marker.png', function (error, image) {
+        map.addImage('UserIcon', image);
     });
 });
 if (sessionStorage.getItem("userType") == "Customer") {
@@ -113,7 +124,7 @@ function findDriver() {
         console.log(long, lat)
         console.log('/api/finddriver/' + lat + '/' + long)
         $.ajax({
-            url: '/api/finddriver/21.00414/105.8443332',
+            url: '/api/finddriver/' + lat + '/' + long,
             type: 'GET'
         }).done(function (data) {
             var driverBox = ``;
@@ -223,12 +234,18 @@ function ChoseDriver(id) {
                 <span>Điện thoại: <b>${ShowMessageIfEmpty(data[0].Phone)}</b></span>
                 <div class="col-sm-12" id="CloseChoseDriver">
                     <button class="btn btn-sm" onclick="PaymentDriver('${data[0]._id}')">Thanh toán</button>
-                    <button class="btn btn-sm" onclick="CloseChoseDriver()">Hủy chuyến</button>
+                    <button class="btn btn-sm" id="CancelDrive" onclick="CloseChoseDriver()">Hủy chuyến</button>
                 </div>
             </div>
         </div>`;
         document.getElementById("driverPickerAreaInfo").innerHTML = driverBoxInfo;
     });
+    var OriginLocation = directions.getOrigin().geometry.coordinates;
+    var DirectionLocation = directions.getDestination().geometry.coordinates;
+    console.log(OriginLocation, DirectionLocation);
+    if (OriginLocation != null && DirectionLocation != null && OriginLocation != "" && DirectionLocation != "") {
+        socket.emit('send_customer_info', { OriginLocation: OriginLocation, DirectionLocation: DirectionLocation, DriverId: id, CurentUserId: sessionStorage.getItem("LoginId") })
+    }
 }
 function CloseChoseDriver() {
     $("#mapCurrentPosition2").show();
@@ -237,18 +254,14 @@ function CloseChoseDriver() {
     $("#CallDriver").show();
     $("#driverGenerator").show();
     $("#driverPickerAreaInfo").hide();
+    socket.emit('cancel_drive', { Cancel: true })
+    location.reload();
+}
+function CloseChoseUser() {
+    socket.emit('cancel_user', { Cancel: true })
+    location.reload();
 }
 function PaymentDriver(id) {
-    // document.getElementById("driverPickerAreaInfo").innerHTML = document.getElementById("driverPickerAreaInfo").innerHTML + `
-    //             <div class="col-sm-12" style="padding:0px">
-    //                 <div class="alert alert-success alert-dismissible fade in">
-    //                     <a href="#" class="close" data-dismiss="alert" aria-label="close" style="top: -8px;">&times;</a>
-    //                     <strong>Thanh toán thành công!</strong> Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.
-    //                 </div>
-    //             </div>`;
-    //             document.getElementById("CloseChoseDriver").innerHTML = `
-    //                 <button class="btn btn-sm" onclick="CloseChoseDriver()"style="width: 95%;">Đóng</button>
-    //             `;
     if (sessionStorage.getItem("LoginId") != null && sessionStorage.getItem("LoginId") != "") {
         $.ajax({
             url: '/api/paymentdriver/',
@@ -272,8 +285,12 @@ function PaymentDriver(id) {
             url: '/api/getmoney/' + sessionStorage.getItem("LoginId"),
             type: 'GET'
         }).done(function (data) {
-            document.getElementById("moneyArea").innerHTML = data.Money;
+            setTimeout(function () {
+                document.getElementById("moneyArea").innerHTML = data[0].Money + ' VNĐ';
+            }, 5000);
         });
+
+        socket.emit('payment', { Pay: true })
     }
 }
 
@@ -392,9 +409,14 @@ document.getElementById('login-button').addEventListener('click', (e) => {
                     $("#isLoginDriver").show();
                     $("#isLogin").hide();
                     $("#isNotLogin").hide();
+                    $("#InputLocation").hide();
+                    $("#LocationDirectionGuest").hide();
+                    $("#CallDriver").hide();
+                    document.getElementById('mapItemtab1MoneyName').innerHTML = 'SỐ TIỀN NHẬN ĐƯỢC:';
                 }
                 DisplayUserInfo(data);
                 PopupSuccess("Đăng nhập tài khoản thành công!");
+                document.getElementById("moneyArea").innerHTML = data.Money + ' VNĐ';
             },
             error: (error) => {
                 console.log(error)
@@ -410,6 +432,7 @@ document.getElementById('logOut').addEventListener('click', (e) => {
     $("#isLogin").hide();
     $("#isNotLogin").show();
     PopupSuccess("Đăng xuất tài khoản thành công!");
+    location.reload();
 });
 function logOut() {
     sessionStorage.removeItem("userType");
@@ -418,6 +441,7 @@ function logOut() {
     $("#isLogin").hide();
     $("#isNotLogin").show();
     PopupSuccess("Đăng xuất tài khoản thành công!");
+    location.reload();
 }
 function Direction() {
     if ($(".mapbox-directions-instructions")[0]) {
@@ -511,6 +535,20 @@ function getLocation() {
         navigator.geolocation.watchPosition(showPosition);
     } else {
         // x.innerHTML = "Geolocation is not supported by this browser.";
+    }
+    var Longtitude = sessionStorage.getItem('Longitude');
+    var Lattitude = sessionStorage.getItem('Latitude');
+    if (sessionStorage.getItem("LoginId") != null && sessionStorage.getItem("LoginId") != "") {
+        $.ajax({
+            url: '/api/updateuserlocation/',
+            type: 'POST',
+            data: { LoginId: sessionStorage.getItem("LoginId"), "Longtitude": Longtitude, "Lattitude": Lattitude },
+            success: (data) => {
+                console.log(data);
+            },
+        });
+    } else {
+        PopupError('Bạn cần đăng nhập hoặc đăng ký trước khi lấy vị trí hiện tại!');
     }
 }
 if (sessionStorage.getItem("Latitude") != null && sessionStorage.getItem("Latitude") != "" && sessionStorage.getItem("Longitude") != null && sessionStorage.getItem("Longitude") != "") {
@@ -691,7 +729,6 @@ function showPosition(position) {
 
 $(function () {
     //make connection
-    var socket = io.connect('http://localhost:3000')
 
     //buttons and inputs
     var message = $("#message")
@@ -700,11 +737,43 @@ $(function () {
     var send_username = $("#send_username")
     var chatroom = $("#chatroom")
     var feedback = $("#feedback")
-
+    var canceldrive = $("#Cancel_Drive")
     //Emit message
     send_message.click(function () {
         socket.emit('new_message', { message: message.val() })
     })
+
+    socket.on("cancel_drive", (data) => {
+        console.log(data)
+        if (data.Cancel == true) {
+            directions.removeRoutes();
+            map.removeLayer('UserLayer');
+            map.removeSource('UserSource');
+            window.location.reload();
+        }
+    });
+
+    socket.on("cancel_user", (data) => {
+        console.log(data)
+        if (data.Cancel == true) {
+            window.location.reload();
+        }
+    });
+
+    socket.on("payment", (data) => {
+        console.log(data)
+        if (data.Pay == true) {
+            PopupSuccess('Khách hàng đã thanh toán cho bạn!');
+            $.ajax({
+                url: '/api/getmoney/' + sessionStorage.getItem("LoginId"),
+                type: 'GET'
+            }).done(function (data) {
+                setTimeout(function () {
+                    document.getElementById("moneyArea").innerHTML = data[0].Money + ' VNĐ';
+                }, 5000);
+            });
+        }
+    });
 
     //Listen on new_message
     socket.on("new_message", (data) => {
@@ -718,6 +787,116 @@ $(function () {
             socket.emit('new_message', { message: message.val() })
         }
     });
+
+    socket.on("send_customer_info", (data) => {
+        if (sessionStorage.getItem("userType") == "Driver") {
+            PopupSuccess("Khách hàng đã chọn bạn!<br/>Vui đến đón họ");
+            map.addControl(directions, 'top-left');
+            directions.setDestination(data.DirectionLocation);
+            directions.setOrigin(data.OriginLocation);
+            console.log(data);
+            dataProvince.features = [];
+            $.ajax({
+                url: '/api/appuser/' + data.CurentUserId,
+                type: 'GET'
+            }).done(function (data) {
+                console.log(data)
+                var driverBoxInfo = `<div class="col-sm-12 driverImage">
+                <div class="imgAvatar">
+                    <img src="${data.Avatar}">
+                </div>
+                    <div class="col-sm-12 driverInfoPickup">
+                        <span>Khách hàng: <b>${ShowMessageIfEmpty(data.UserName)}</b></span>
+                        <span>Điện thoại: <b>${ShowMessageIfEmpty(data.Phone)}</b></span>
+                        <div class="col-sm-12" id="CloseChoseDriver">
+                            <button class="btn btn-sm" id="CancelDrive" onclick="CloseChoseUser()">Hủy chuyến</button>
+                        </div>
+                    </div>
+                </div>`;
+                document.getElementById("driverPickerAreaInfo").innerHTML = driverBoxInfo;
+
+                $("#driverGenerator").hide();
+                dataProvince.features[0] = {
+                    "type": "Feature",
+                    "properties": {
+                        "message": data.UserName,
+                        "MoTaLaiXe": "<strong style='color:#428BCA;'>" + data.UserName + "</strong><br/><p>SĐT: " + data.Phone + "</p>",
+                    },
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [data.CurrentPosition[0].LongitudePosition, data.CurrentPosition[0].LatitudePosition]
+                    }
+                }
+                // document.getElementById("driverGenerator").innerHTML = driverBox;
+                if (map.getLayer("UserLayer")) {
+                    map.removeLayer("UserLayer");
+                }
+                if (map.getSource("UserSource")) {
+                    window.setInterval(function () {
+                        map.getSource("UserSource").setData(dataProvince);
+                    }, 2000);
+                } else {
+                    map.addSource("UserSource", {
+                        "type": "geojson",
+                        "data": dataProvince,
+                    });
+                }
+                map.addLayer({
+                    "id": "UserLayer",
+                    "type": "symbol",
+                    "source": "UserSource",
+                    "layout": {
+                        "text-field": ["get", "message"],
+                        "text-size": 10,
+                        "text-variable-anchor": ["top", "bottom", "left", "right"],
+                        "text-radial-offset": 0.5,
+                        "text-justify": "auto",
+                        "icon-image": "UserIcon",
+                        "icon-size": 0.08,
+                        "text-max-width": 8
+                    }
+                });
+                map.on('click', "UserLayer", function (e) {
+                    var coordinates = e.features[0].geometry.coordinates;
+                    var MoTaLaiXe = e.features[0].properties.MoTaLaiXe;
+                    while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                    }
+                    map.flyTo({
+                        center: coordinates
+                    });
+                    new mapboxgl.Popup()
+                        .setLngLat(coordinates)
+                        .setHTML(MoTaLaiXe)
+                        .addTo(map);
+
+                });
+                map.on('mouseenter', "UserLayer", function () {
+                    map.getCanvas().style.cursor = 'pointer';
+                });
+                map.on('mouseleave', "UserLayer", function () {
+                    map.getCanvas().style.cursor = '';
+                });
+            });
+        }
+        setTimeout(function () {
+            var LoTrinhChuyenDiMile = $(".mapbox-directions-route-summary h1").text();
+            LoTrinhChuyenDiMile = LoTrinhChuyenDiMile.replace("mi", "");
+            QuangDuong = LoTrinhChuyenDiMile;
+            if (getMeters(LoTrinhChuyenDiMile) > 1000) {
+                LoTrinhChuyenDiMile = getKiloMeters(getMeters(LoTrinhChuyenDiMile)).toLocaleString(undefined, { minimumFractionDigits: 0 }) + "km"
+            } else {
+                LoTrinhChuyenDiMile = getMeters(LoTrinhChuyenDiMile).toLocaleString(undefined, { minimumFractionDigits: 0 }) + "m"
+            }
+            var LoTrinhChuyenDiTime = $(".mapbox-directions-route-summary span").text();
+            ThoiGian = ConvertToMinute(LoTrinhChuyenDiTime);
+            Money = calculateMoney(QuangDuong, ThoiGian);
+            document.getElementById("LoTrinhChuyenDi").innerHTML = "<span style='font-size: 25px;'>" + LoTrinhChuyenDiMile + " " + LoTrinhChuyenDiTime + "</span>";
+            document.getElementById("TienDi").innerHTML = "<span style='font-size: 25px;'>" + formatter.format(Money) + "</span>";
+
+        }, 5000);
+
+    })
 
     //Emit a username
     send_username.click(function () {
@@ -744,3 +923,98 @@ $("#closemessage").click(function () {
     }
 });
 $(".ChatBox").css('display', 'none');
+
+function OpenHistoryRoute() {
+    if (sessionStorage.getItem("userType") == "Customer") {
+        $.ajax({
+            url: '/api/historyrouteuser/' + sessionStorage.getItem("LoginId"),
+            type: 'GET'
+        }).done(function (data) {
+            console.log(data)
+            var historyHTML = `
+            <div class="container mb-5">
+	            <div class="row" style="width: 40%;">
+		            <div class="">
+                        <ul class="timeline">
+            `
+            data.forEach(element => {
+                historyHTML += `
+                    <li>
+                        <a target="_blank" href="#">${ShowMessageIfEmpty(element.LogContent)} VNĐ</a>
+                        <a href="#" class="float-right">${ToDate(element.CreatedDate)}</a>
+                        <p>${element.LogDescription}</p>
+                    </li>
+                `
+            });
+
+            historyHTML += `</ul>
+                            </div>
+                        </div>
+                    </div>`
+            document.getElementById("maphistoryroute").innerHTML = historyHTML;
+        });
+    }
+    else if (sessionStorage.getItem("userType") == "Driver") {
+        $.ajax({
+            url: '/api/historyroutedriver/' + sessionStorage.getItem("LoginId"),
+            type: 'GET'
+        }).done(function (data) {
+            console.log(data)
+            var historyHTML = `
+            <div class="container mb-5">
+	            <div class="row" style="width: 40%;">
+		            <div class="">
+                        <ul class="timeline">
+            `
+            data.forEach(element => {
+                historyHTML += `
+                    <li>
+                        <a target="_blank" href="#">${ShowMessageIfEmpty(element.LogContent)} VNĐ</a>
+                        <a href="#" class="float-right">${ToDate(element.CreatedDate)}</a>
+                        <p>${element.LogDescription}</p>
+                    </li>
+                `
+            });
+
+            historyHTML += `</ul>
+                            </div>
+                        </div>
+                    </div>`
+            document.getElementById("maphistoryroute").innerHTML = historyHTML;
+        });
+    } else {
+        PopupError('Bạn chưa đăng nhập vào hệ thống!');
+    }
+}
+
+function OpenWallet() {
+    $.ajax({
+        url: '/api/getmoney/' + sessionStorage.getItem("LoginId"),
+        type: 'GET'
+    }).done(function (data) {
+        document.getElementById("mapwallet").innerHTML = '<b>Số tiền trong tài khoản của bạn là:</b> ' + data[0].Money + ' VNĐ';
+    });
+}
+document.getElementById('naptien-button').addEventListener('click', (e) => {
+    let inputMoney = document.getElementById("inputMoney").value;
+    if (inputMoney == "" || inputMoney == null) {
+        PopupError("Bạn chưa nhập số tiền!");
+    } else {
+        $.ajax({
+            url: '/api/naptien/',
+            type: 'POST',
+            data: { inputMoney: inputMoney, CurrentUserId: sessionStorage.getItem("LoginId")},
+            success: (data) => {
+            },
+        });
+        
+        PopupSuccess("Bạn nạp tiền thành công!");
+        $.ajax({
+            url: '/api/getmoney/' + sessionStorage.getItem("LoginId"),
+            type: 'GET'
+        }).done(function (data) {
+            document.getElementById("mapwallet").innerHTML = '<b>Số tiền trong tài khoản của bạn là:</b> ' + data[0].Money + ' VNĐ';
+                document.getElementById("moneyArea").innerHTML = data[0].Money + ' VNĐ';
+        });
+    }
+});

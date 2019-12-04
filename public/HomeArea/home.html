@@ -76,7 +76,7 @@
                 border-top-width: 10px;
                 color: white;
                 border-radius: 15px;box-shadow: 1px 1px 1px 1px #888888;
-            " id="moneyArea">100,000 VND</span>
+            " id="moneyArea">0 VND</span>
             </div>
             <div id="mapCurrentPosition2" class="col-sm-6">
                 <a onclick="getLocation()" class="btn btn-sm btn-success"><b>LẤY VỊ TRÍ HIỆN TẠI</b></a>
@@ -97,7 +97,7 @@
                         <div id="LoTrinhChuyenDi"><span style='font-size: 25px;'>0km 0min</span></div>
                     </div>
                     <div class="col-sm-6">
-                        <h5><b style="text-decoration: underline;">SỐ TIỀN PHẢI TRẢ:</b></h5>
+                        <h5><b style="text-decoration: underline;" id="mapItemtab1MoneyName">SỐ TIỀN PHẢI TRẢ:</b></h5>
                         <div id="TienDi"><span>đ</span> <span style='font-size: 25px;'>0</span></div>
                     </div>
                 </div>
@@ -143,12 +143,18 @@
                         </div>
                         <div class="userDetail"><span class="glyphicon glyphicon-user" style="font-size: 14px;"></span>
                             Thông tin tài khoản</div>
-                        <div class="historyRoute"><span class="glyphicon glyphicon-road"
-                                style="font-size: 14px;"></span> Lịch sử chuyến đi</div>
-                        <div class="walletHistory"><span class="glyphicon glyphicon-usd"
-                                style="font-size: 14px;"></span> Ví của bạn</div>
-                        <div class="walletHistory"><span class="glyphicon glyphicon-usd"
-                                style="font-size: 14px;"></span> Nạp tiền</div>
+                        <div class="historyRoute">
+                            <a data-toggle="modal" data-target="#myModalHistoryRoute" onclick="OpenHistoryRoute()">
+                                <span class="glyphicon glyphicon-road" style="font-size: 14px;"></span>
+                                Lịch sử chuyến đi
+                            </a>
+                        </div>
+                        <div class="walletHistory">
+                            <a data-toggle="modal" data-target="#myModalWallet" onclick="OpenWallet()">
+                                <span class="glyphicon glyphicon-usd" style="font-size: 14px;"></span>
+                                Ví của bạn
+                            </a>
+                        </div>
                         <div class="settingDetail"><span class="glyphicon glyphicon-asterisk"
                                 style="font-size: 14px;"></span> Cài đặt</div>
                         <div class="logOutDetail" id="logOut" onclick="logOut()"><span class="glyphicon glyphicon-off"
@@ -162,10 +168,18 @@
                         </div>
                         <div class="userDetail"><span class="glyphicon glyphicon-user" style="font-size: 14px;"></span>
                             Thông tin tài khoản</div>
-                        <div class="historyDriveRoute"><span class="glyphicon glyphicon-road"
-                                style="font-size: 14px;"></span> Lịch sử chở khách</div>
-                        <div class="walletHistory"><span class="glyphicon glyphicon-usd"
-                                style="font-size: 14px;"></span> Ví của bạn</div>
+                        <div class="historyDriveRoute">
+                            <a data-toggle="modal" data-target="#myModalHistoryRoute" onclick="OpenHistoryRoute()">
+                                <span class="glyphicon glyphicon-road" style="font-size: 14px;"></span>
+                                Lịch sử chở khách
+                            </a>
+                        </div>
+                        <div class="walletHistory">
+                            <a data-toggle="modal" data-target="#myModalWallet" onclick="OpenWallet()">
+                                <span class="glyphicon glyphicon-usd" style="font-size: 14px;"></span>
+                                Ví của bạn
+                            </a>
+                        </div>
                         <div class="settingDetail"><span class="glyphicon glyphicon-asterisk"
                                 style="font-size: 14px;"></span> Cài đặt</div>
                         <div class="logOutDetail" id="logOut" onclick="logOut()"><span class="glyphicon glyphicon-off"
@@ -261,7 +275,49 @@
                     <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
                 </div> -->
             </div>
+        </div>
+    </div>
 
+    <!-- Register Modal -->
+    <div class="modal fade" id="myModalHistoryRoute" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Lịch sử chuyến đi</h4>
+                    <button type="button" class="close" data-dismiss="modal" style="margin-top: -9px;">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="maphistoryroute"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="myModalWallet" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Ví của bạn</h4>
+                    <button type="button" class="close" data-dismiss="modal" style="margin-top: -9px;">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="mapwallet"></div>
+                    <div class="clearBoth"></div>
+                    <h4 id="BikeLicensePlaceText">Nạp thêm tiền</h4>
+                    <input type="number" name="inputMoney" placeholder="Nhập số tiền" class="form-group" id="inputMoney"
+                        required></input>
+                    <div class="napTienBtn">
+                        <button class="btn btn-default" id="naptien-button">Nạp tiền</button><br>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+                </div>
+            </div>
         </div>
     </div>
 

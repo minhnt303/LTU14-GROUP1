@@ -34,7 +34,6 @@ mongoose.connect('mongodb://localhost:27017/grabbike', (err) => {
         res.status(200).sendFile(path.resolve(__dirname + "/source_code/mapboxtest.html"));
     });
     server.get("/api/finddriver/:lat/:long", async (req, res) => {
-        console.log(1)
         var appUser = new Array();
         const { lat, long } = req.params;
         appUserModel.find({ "UserType": "Driver", "CurrentPosition": { $exists: true } }, function (err, driver) {
@@ -57,6 +56,21 @@ mongoose.connect('mongodb://localhost:27017/grabbike', (err) => {
             res.json(appUser)
         });
     });
+
+    server.post("/api/updateuserlocation/", async (req, res) => {
+        const LoginId = req.body.LoginId;
+        console.log(LoginId)
+        const Longtitude = req.body.Longtitude;
+        const Lattitude = req.body.Lattitude;
+        appUserModel.findById(LoginId).updateOne({CurrentPosition: [{LatitudePosition : Lattitude,LongitudePosition: Longtitude}] }).exec();
+    });
+    
+    server.post("/api/naptien/", async (req, res) => {
+        const inputMoney = req.body.inputMoney;
+        const CurrentUserId = req.body.CurrentUserId;
+        appUserModel.findById(CurrentUserId).updateOne({ $inc: { Money: inputMoney } }).exec();
+    });
+
     server.get("/api/chosedriver/:id", async (req, res) => {
         const { id } = req.params;
         appUserModel.findById(id).find({ "UserType": "Driver", "CurrentPosition": { $exists: true } }, function (err, driver) {
@@ -67,13 +81,38 @@ mongoose.connect('mongodb://localhost:27017/grabbike', (err) => {
             res.json(driver)
         });
     });
-    server.get("/api/getmoney/:id", async (req, res) => {
+    
+    server.get("/api/appuser/:id", async (req, res) => {
         const { id } = req.params;
-        appUserModel.findById(id).find({}, function (err, appuser) {
+        appUserModel.findById(id, function (err, driver) {
             if (err) {
                 res.send('Không tìm thấy người dùng nào !')
                 next();
             }
+            res.json(driver)
+        });
+    });
+    
+    server.get("/api/historyroutedriver/:id", async (req, res) => {
+        const { id } = req.params;
+        console.log(id)
+        historyRouteModel.find({"DriverId":id}, function (err, driver) {
+            res.json(driver)
+        });
+    });
+
+    
+    server.get("/api/historyrouteuser/:id", async (req, res) => {
+        const { id } = req.params;
+        console.log(id)
+        historyRouteModel.find({"AppUserId":id}, function (err, driver) {
+            res.json(driver)
+        });
+    });
+
+    server.get("/api/getmoney/:id", async (req, res) => {
+        const { id } = req.params;
+        appUserModel.findById(id).find({}, function (err, appuser) {
             res.json(appuser)
         });
     });
@@ -171,7 +210,27 @@ mongoose.connect('mongodb://localhost:27017/grabbike', (err) => {
             //broadcast the new message
             io.sockets.emit('new_message', {message : data.message, username : socket.username});
         })
+
+        socket.on('send_customer_info', (data) => {
+            //broadcast the new message
+            io.sockets.emit('send_customer_info', { OriginLocation: data.OriginLocation , DirectionLocation:data.DirectionLocation,DriverId: data.DriverId,CurentUserId:data.CurentUserId});
+        })
     
+        socket.on('cancel_drive', (data) => {
+            //broadcast the new message
+            io.sockets.emit('cancel_drive', {Cancel: data.Cancel});
+        })
+        socket.on('cancel_user', (data) => {
+            //broadcast the new message
+            io.sockets.emit('cancel_user', {Cancel: data.Cancel});
+        })
+
+        
+        socket.on('payment', (data) => {
+            //broadcast the new message
+            io.sockets.emit('payment', {Pay: data.Pay});
+        })
+
         //listen on typing
         socket.on('typing', (data) => {
             socket.broadcast.emit('typing', {username : socket.username})
