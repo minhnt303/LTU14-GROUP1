@@ -1,34 +1,36 @@
 {
   "name": "ltu14-group1",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "LTU14_GROUP1_IT4883Q_Distributed software development",
+  "main": "server.js",
+  "directories": {
+    "doc": "doc"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon ./server.js"
+    "start": "node ./server.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/minhnt303/LTU14-GROUP1.git"
   },
-  "author": "mintnguyenthanh",
+  "author": "",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/minhnt303/LTU14-GROUP1/issues"
   },
+  "homepage": "https://github.com/minhnt303/LTU14-GROUP1#readme",
   "dependencies": {
     "black-dashboard": "^1.0.0",
-    "body-parser": "^1.18.3",
-    "chart.js": "^2.8.0",
+    "body-parser": "^1.19.0",
+    "chart.js": "^2.9.3",
     "express": "^4.17.1",
-    "http": "^0.0.0",
-    "mapbox-gl": "^1.4.1",
-    "mongoose": "^5.4.17",
-    "node-localstorage": "^1.3.1",
-    "nodemon": "^1.18.10",
+    "http": "0.0.0",
+    "mongoose": "^5.7.13",
+    "node-localstorage": "^2.1.5",
+    "nodemon": "^2.0.1",
     "socket.io": "^2.3.0",
     "store": "^2.0.12",
-    "yarn": "^1.15.2"
-  },
-  "homepage": "https://github.com/minhnt303/LTU14-GROUP1#readme"
+    "yarn": "^1.21.0"
+  }
 }
